@@ -1,0 +1,15 @@
+{
+  "name": "organlink-backend",
+  "version": "1.0.0",
+  "description": "Backend for OrganLink Project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "javascript",
+    "backend"
+  ],
+  "author": "Sudhanshu Kadam",
+  "license": "ISC"
+}
