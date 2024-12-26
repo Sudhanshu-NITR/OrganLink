@@ -14,4 +14,10 @@ app.use(express.urlencoded({extended:true, limit:"16kb"})); //encoding the url
 app.use(express.static("public")) //to store files that we recieve, into our server
 app.use(cookieParser())
 
+//routes import
+import hospitalRouter from './routes/hospital.routes.js';
+
+//routes declaration
+app.use("/api/v1/hospitals", hospitalRouter);
+
 export { app } ;
