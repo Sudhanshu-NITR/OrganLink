@@ -7,36 +7,42 @@ import { ApiResponse } from '../utils/ApiResponse.js';
 const registerHospital = asyncHandler( async (req, res) =>{
     
     // get hospital details from frontend
-    const {name, contactInfo, password} = req.body;
-    console.log("email: ", contactInfo.email);
-    
+    let {name, contactInfo, password, location, address} = req.body;
+    contactInfo = JSON.parse(contactInfo);
+    const email = contactInfo.email;
+    const phone = contactInfo.phone;
+    // console.log("email: ", email);
+
     // validation-not empty
     if(
-        [name, contactInfo.email, contactInfo.phone, password].some((field) => field?.trim() ==="")
+        [name, email, phone, password, location, address].some((field) => field?.trim() ==="")
     ){
         throw new ApiError(400, "All fields are required");
     }
+    // console.log(req.body);
+    // console.log(req.files);
+    
     
     // check if user already exists: name, email
-    const existingUser = User.findOne({
-        $or: [{name, email}]
-    })
-    
-    if(existingUser){
+    const existingHospital = await Hospital.findOne({
+        $or: [{ name }, { location }]
+    });
+    if(existingHospital){
         throw new ApiError(409, "Hospital with same name or email already exists")
     }
     
     // check for images, check for avatar
+    // console.log(req.files?.avatar[0].path)
     const avatarLocalPath = req.files?.avatar[0].path;
     if(!avatarLocalPath){
         throw new ApiError(400, "Avatar is required");
     }
     
     // upload them to cloudinary
-    const avatar = uploadOnCloudinary(avatarLocalPath);
-    
+    const avatar = await uploadOnCloudinary(avatarLocalPath);
+
     if(!avatar){
-        throw new ApiError(400, "Avatar is required");
+        throw new ApiError(400, "Avatar failed to upload on Cloudinary");
     }
     
     // create user object - create entry in db
@@ -45,10 +51,12 @@ const registerHospital = asyncHandler( async (req, res) =>{
         avatar: avatar.url,
         contactInfo,
         password,
+        location,
+        address
     })
     
     // remove password & refresh token field from response
-    const createdHospital = await hospital.findById(hospital._id).select(
+    const createdHospital = await Hospital.findById(hospital._id).select(
         "-password -refreshToken"
     )
     

@@ -9,6 +9,10 @@ const hospitalSchema = new Schema(
             required: true,
             index: true,
         },
+        address:{
+            type: String,
+            required: true
+        },
         avatar:{
             type: String,   //cloudinary url
             required: true,
