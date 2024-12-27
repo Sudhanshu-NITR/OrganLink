@@ -5,7 +5,7 @@ import {uploadOnCloudinary} from "../utils/cloudinary.js"
 import { ApiResponse } from '../utils/ApiResponse.js';
 import jwt from "jsonwebtoken"
 
-const generateRefreshAndAccessToken = async (hospitalId) =>{
+const generateRefreshAndAccessToken = async(hospitalId)=>{
     try {
         const hospital = await Hospital.findById(hospitalId);
         const accessToken = hospital.generateAccessToken();
@@ -22,7 +22,7 @@ const generateRefreshAndAccessToken = async (hospitalId) =>{
     }
 }
 
-const registerHospital = asyncHandler( async (req, res) =>{
+const registerHospital = asyncHandler(async(req, res)=>{
     
     // get hospital details from frontend
     let {name, contactInfo, password, location, address} = req.body;
@@ -89,7 +89,7 @@ const registerHospital = asyncHandler( async (req, res) =>{
     )
 });
 
-const loginHospital = asyncHandler( async (req, res) =>{
+const loginHospital = asyncHandler(async(req, res)=>{
     const {contactInfo, password} = req.body;
     // contactInfo = JSON.parse(contactInfo);
         
@@ -138,7 +138,7 @@ const loginHospital = asyncHandler( async (req, res) =>{
     
 });
 
-const logoutHospital = asyncHandler( async (req, res)=>{
+const logoutHospital = asyncHandler(async(req, res)=>{
     await Hospital.findByIdAndUpdate(
         req.hospital._id,
         {
@@ -165,7 +165,7 @@ const logoutHospital = asyncHandler( async (req, res)=>{
     )
 });
 
-const refreshAcessToken = asyncHandler( async (req, res)=>{
+const refreshAcessToken = asyncHandler(async(req, res)=>{
     const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken;
 
     if(!incomingRefreshToken){
@@ -183,7 +183,7 @@ const refreshAcessToken = asyncHandler( async (req, res)=>{
             throw new ApiError(401, "Invalid Refresh Token");
         }
     
-        if(incomingRefreshToken !== user?.refreshToken){
+        if(incomingRefreshToken !== hospital?.refreshToken){
             throw new ApiError(401, "Refresh Token is invalid or expired")
         }
     
@@ -214,9 +214,111 @@ const refreshAcessToken = asyncHandler( async (req, res)=>{
 
 });
 
+const changeCurrentPassword = asyncHandler(async(Request, res)=>{
+    const {oldPassword, newPassword} = req.body;
+    const hospital = Hospital.findById(req.hospital?._id);
+    const isPasswordCorrect = await hospital.isPasswordCorrect(oldPassword);
+
+    if(!isPasswordCorrect){
+        throw new ApiError(400, "Invalid old password");
+    }
+
+    user.password = newPassword;
+    await user.save({validateBeforeSave: false});
+
+    return res
+    .status(200)
+    .json(new ApiResponse(
+        200,
+        {},
+        "Password changes successfully"
+    ));
+});
+
+const getCurrentHospital = asyncHandler(async(req, res)=>{
+    return res
+    .status(200)
+    .json(new ApiResponse(
+        200, 
+        req.hospital,
+        "current hospital fetched successfully"
+    ))
+});
+
+const updateAccountDetails = asyncHandler(async(req, res)=>{
+    const {name, contactInfo, address} = req.body;
+    contactInfo = JSON.parse(contactInfo);
+    const email = contactInfo.email;
+    const phone = contactInfo.phone;
+    
+    if(!name || !email || !phone || !address){
+        throw new ApiError(400, "All fields are required");
+    }
+
+    const hospital = Hospital.findByIdAndUpdate(
+        req.hospital._id,
+        {
+            $set: {
+                name,
+                contactInfo: {
+                    email,
+                    phone
+                },
+                address
+            }
+        },
+        {new: true}
+    ).select("-password");
+
+    return res
+    .status(200)
+    .json(new ApiResponse(
+        200,
+        hospital,
+        "Account details updated successfully"
+    ))
+    
+});
+
+const updateHospitalAvatar = asyncHandler(async(req, res)=>{
+    const avatarLocalPath = req.file?.path;
+
+    if(!avatarLocalPath){
+        throw new ApiError(400, "Avatar file is missing");
+    }
+
+    const avatar = await uploadOnCloudinary(avatarLocalPath);
+
+    if(!avatar.url){
+        throw new ApiError(400, "Error while uploading avatar");
+    }
+
+    const hospital = await Hospital.findByIdAndUpdate(
+        req.hospital?._id,
+        {
+            $set: {
+                avatar: avatar.url,
+            }
+        },
+        {new: true}
+    ).select("-password")
+
+    return res
+    .status(200)
+    .json(new ApiResponse(
+        200,
+        hospital,
+        "Avatar updated successfully"
+    ));
+});
+
 export {
     registerHospital, 
     loginHospital, 
     logoutHospital, 
-    refreshAcessToken
+    refreshAcessToken,
+    changeCurrentPassword,
+    getCurrentHospital,
+    updateAccountDetails,
+    updateHospitalAvatar
 };
