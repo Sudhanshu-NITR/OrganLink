@@ -53,10 +53,10 @@ hospitalSchema.methods.isPasswordCorrect = async function(password){
 }
 
 hospitalSchema.methods.generateAccessToken = function() {
-    jwt.sign(
+    return jwt.sign(
         {
             _id: this._id,
-            email: this.contactInfo.email,
+            contactInfo: this.contactInfo,
             name: this.name
         },
         process.env.ACCESS_TOKEN_SECRET,
@@ -67,7 +67,7 @@ hospitalSchema.methods.generateAccessToken = function() {
 }
 
 hospitalSchema.methods.generateRefreshToken = function() {
-    jwt.sign(
+    return jwt.sign(
         {
             _id: this._id,
         },
