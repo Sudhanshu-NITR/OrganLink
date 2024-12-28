@@ -84,8 +84,14 @@ const registerHospital = asyncHandler(async(req, res)=>{
     }
     
     // return response
-    return res.status(201).json(
-        new ApiResponse(200, createdHospital, "Hospital Registered Successfully")
+    return res
+    .status(201)
+    .json(
+        new ApiResponse(
+            200, 
+            createdHospital, 
+            "Hospital Registered Successfully"
+        )
     )
 });
 
@@ -255,7 +261,7 @@ const updateAccountDetails = asyncHandler(async(req, res)=>{
         throw new ApiError(400, "All fields are required");
     }
 
-    const hospital = Hospital.findByIdAndUpdate(
+    const hospital = await Hospital.findByIdAndUpdate(
         req.hospital._id,
         {
             $set: {
@@ -310,6 +316,12 @@ const updateHospitalAvatar = asyncHandler(async(req, res)=>{
         hospital,
         "Avatar updated successfully"
     ));
+});
+
+const getHospitalProfile = asyncHandler(async(req, res)=>{
+    const {donor_id} = req.params;
+
+
 });
 
 export {

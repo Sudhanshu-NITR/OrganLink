@@ -35,8 +35,8 @@ const recipientSchema = new Schema(
         status: {
             type: String,
             required: true,
-            enum: ['available', 'unavailable'],
-            default: 'unavailable',
+            enum: ['matched', 'unmatched'],
+            default: 'unmatched',
         },
     },
     {timestamps: true}

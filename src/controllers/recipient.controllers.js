@@ -1,0 +1,112 @@
+import { Recipient } from '../models/recipient.models.js';
+import { Donor } from '../models/donor.models.js';
+import { ApiError } from '../utils/ApiError.js';
+import {asyncHandler} from '../utils/asyncHandler.js'
+import { ApiResponse } from '../utils/ApiResponse.js';
+
+
+const addRecipient = asyncHandler(async(req, res)=>{
+    const {hospital_id} = req.params;
+    let {fullName, age, bloodType, organNeeded, urgency} = req.body;
+
+    if(
+        [fullName, age, bloodType, organNeeded, urgency].some((field) => field?.trim() ==="")
+    ){
+        throw new ApiError(400, "All fields are required");
+    }
+
+    const existingRequest = await Recipient.findOne({
+        $or: [{fullName, organNeeded}]
+    });
+
+    if(existingRequest){
+        throw new ApiError(409, "Request already exists");
+    }
+
+    const recipient = Recipient.create({
+        fullName, 
+        age, 
+        bloodType, 
+        organNeeded, 
+        urgency,
+        status: "unmatched",
+        hospital: hospital_id
+    });
+
+    if(!recipient){
+        throw new ApiError(500, "Something Went Wrong while preparing the request");
+    }
+
+    return res
+    .status(201)
+    .json(
+        new ApiResponse(
+            200, 
+            recipient, 
+            "Recipient request registered successfully"
+        )
+    )
+
+}); 
+
+const matchRecipient = asyncHandler(async(req, res)=>{
+    const {organNeeded, bloodType} = req.recipient;
+    
+    if(!organNeeded || !bloodType){
+        throw new ApiError(400, "Recipient information invalid");
+    }
+
+    const matches = Donor.aggregate([
+        {
+            $match: { 
+                bloodType, 
+                organType: organNeeded, 
+                status: 'available' 
+            }
+        },
+        {
+            $lookup: {
+                from: 'hospitals', 
+                localField: 'hospital', 
+                foreignField: '_id', 
+                as: 'hospitalDetails' 
+            }
+        },
+        { 
+            $project: { 
+                name: 1, 
+                age: 1, 
+                organType: 1, 
+                bloodType: 1, 
+                hospitalDetails: { 
+                    name: 1, 
+                    location: 1 
+                } 
+            }
+        }
+    ]);
+
+    if(!matches){
+        return res
+        .status(200)
+        .json(
+            new ApiResponse(200, {}, "No matches found!")
+        );
+    }
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200, 
+            matches, 
+            "No matches found!"
+        )
+    );
+
+});
+
+export {
+    addRecipient,
+    matchRecipient
+}
