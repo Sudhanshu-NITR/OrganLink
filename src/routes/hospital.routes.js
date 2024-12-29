@@ -24,8 +24,8 @@ router.route("/current-user").get(verifyJWT, getCurrentHospital);
 router.route("/update-account").patch(verifyJWT, updateAccountDetails);
 router.route("/avatar").patch(verifyJWT, upload.single("avatar"), updateHospitalAvatar);
 
-import {recipientRouter} from "./recipient.routes.js";
-import {donorRouter} from "./donor.routes.js";
+import recipientRouter from "./recipient.routes.js";
+import donorRouter from "./donor.routes.js";
 
 router.use("/recipient", recipientRouter);
 router.use("/donor", donorRouter);

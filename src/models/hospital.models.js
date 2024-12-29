@@ -21,17 +21,17 @@ const hospitalSchema = new Schema(
             type: String,
             required: true,
         },
-        contactInfo: {
-            phone: { 
-                type: String, 
-                required: true,
-                unique: true,
-            },
-            email: { 
-                type: String, 
-                required: true, 
-                unique: true 
-            },
+        phone: { 
+            type: String, 
+            required: true,
+            index: true,
+            unique: true,
+        },
+        email: { 
+            type: String, 
+            required: true, 
+            index: true,
+            unique: true 
         },
         password: {
             type: String,
@@ -56,7 +56,8 @@ hospitalSchema.methods.generateAccessToken = function() {
     return jwt.sign(
         {
             _id: this._id,
-            contactInfo: this.contactInfo,
+            email: this.email,
+            phone: this.phone,
             name: this.name
         },
         process.env.ACCESS_TOKEN_SECRET,

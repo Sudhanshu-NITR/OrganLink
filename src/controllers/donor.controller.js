@@ -1,6 +1,8 @@
 import { Donor } from "../models/donor.models.js";
-import {asyncHandler} from "../utils/asyncHandler"
-import { Recipient } from "../models/recipients.models.js";
+import {asyncHandler} from "../utils/asyncHandler.js"
+import {ApiError} from "../utils/ApiError.js"
+import { ApiResponse } from '../utils/ApiResponse.js';
+import { Hospital } from "../models/hospital.models.js";
 
 const addDonor = asyncHandler(async(req, res)=>{
     const {hospital_id} = req.params;
@@ -20,13 +22,17 @@ const addDonor = asyncHandler(async(req, res)=>{
         throw new ApiError(409, "Donor already exists");
     }
 
-    const donor = Donor.create({
+    const hospital = await Hospital.findById(hospital_id).select(
+        "email phone name address"
+    );
+
+    const donor = await Donor.create({
         fullName, 
         age, 
         bloodType, 
         organType, 
         status: "available",
-        hospital: hospital_id
+        hospital
     });
 
     if(!donor){
@@ -43,3 +49,5 @@ const addDonor = asyncHandler(async(req, res)=>{
         )
     )
 });
+
+export { addDonor };

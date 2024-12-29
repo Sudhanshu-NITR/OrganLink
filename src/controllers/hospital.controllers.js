@@ -25,11 +25,7 @@ const generateRefreshAndAccessToken = async(hospitalId)=>{
 const registerHospital = asyncHandler(async(req, res)=>{
     
     // get hospital details from frontend
-    let {name, contactInfo, password, location, address} = req.body;
-    contactInfo = JSON.parse(contactInfo);
-    const email = contactInfo.email;
-    const phone = contactInfo.phone;
-    // console.log("email: ", email);
+    let {name, email, phone, password, location, address} = req.body;
 
     // validation-not empty
     if(
@@ -50,7 +46,7 @@ const registerHospital = asyncHandler(async(req, res)=>{
     }
     
     // check for images, check for avatar
-    // console.log(req.files?.avatar[0].path)
+    // console.log(req.files )
     const avatarLocalPath = req.files?.avatar[0].path;
     if(!avatarLocalPath){
         throw new ApiError(400, "Avatar is required");
@@ -67,7 +63,8 @@ const registerHospital = asyncHandler(async(req, res)=>{
     const hospital = await Hospital.create({
         name, 
         avatar: avatar.url,
-        contactInfo,
+        email,
+        phone,
         password,
         location,
         address
@@ -96,18 +93,15 @@ const registerHospital = asyncHandler(async(req, res)=>{
 });
 
 const loginHospital = asyncHandler(async(req, res)=>{
-    const {contactInfo, password} = req.body;
-    // contactInfo = JSON.parse(contactInfo);
-        
-    const email = contactInfo.email;
-    const phone = contactInfo.phone;
-    if(email=="" && phone==""){
+    const {email, phone, password} = req.body;
+
+    if(email==="" && phone===""){
         throw new ApiError(400, "Email id OR Phone no. is required!!");
     }
+    // console.log(email, phone, password);
     const hospital = await Hospital.findOne({
         $or: [{email}, {phone}]
     })
-
     if(!hospital){
         throw new ApiError(404, "Hospital entry does not exist");
     }
@@ -148,8 +142,8 @@ const logoutHospital = asyncHandler(async(req, res)=>{
     await Hospital.findByIdAndUpdate(
         req.hospital._id,
         {
-            $set: {
-                refreshToken: undefined
+            $unset: {
+                refreshToken: 1
             }
         },
         {
@@ -181,7 +175,7 @@ const refreshAcessToken = asyncHandler(async(req, res)=>{
     try {
         const decodedToken = jwt.verify(
             incomingRefreshToken,
-            proccess.env.REFRESH_TOKEN_SECRET
+            process.env.REFRESH_TOKEN_SECRET
         )
     
         const hospital = Hospital.findById(decodedToken?._id);
@@ -252,10 +246,7 @@ const getCurrentHospital = asyncHandler(async(req, res)=>{
 });
 
 const updateAccountDetails = asyncHandler(async(req, res)=>{
-    const {name, contactInfo, address} = req.body;
-    contactInfo = JSON.parse(contactInfo);
-    const email = contactInfo.email;
-    const phone = contactInfo.phone;
+    const {name, email, phone, address} = req.body;
     
     if(!name || !email || !phone || !address){
         throw new ApiError(400, "All fields are required");
@@ -266,10 +257,8 @@ const updateAccountDetails = asyncHandler(async(req, res)=>{
         {
             $set: {
                 name,
-                contactInfo: {
-                    email,
-                    phone
-                },
+                email,
+                phone,
                 address
             }
         },
@@ -319,8 +308,7 @@ const updateHospitalAvatar = asyncHandler(async(req, res)=>{
 });
 
 const getHospitalProfile = asyncHandler(async(req, res)=>{
-    const {donor_id} = req.params;
-
+    
 
 });
 

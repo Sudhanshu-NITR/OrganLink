@@ -3,7 +3,7 @@ import { Donor } from '../models/donor.models.js';
 import { ApiError } from '../utils/ApiError.js';
 import {asyncHandler} from '../utils/asyncHandler.js'
 import { ApiResponse } from '../utils/ApiResponse.js';
-
+import { Hospital } from '../models/hospital.models.js';
 
 const addRecipient = asyncHandler(async(req, res)=>{
     const {hospital_id} = req.params;
@@ -23,14 +23,18 @@ const addRecipient = asyncHandler(async(req, res)=>{
         throw new ApiError(409, "Request already exists");
     }
 
-    const recipient = Recipient.create({
+    const hospital = await Hospital.findById(hospital_id).select(
+        "email phone name address"
+    );
+
+    const recipient = await Recipient.create({
         fullName, 
         age, 
         bloodType, 
         organNeeded, 
         urgency,
         status: "unmatched",
-        hospital: hospital_id
+        hospital
     });
 
     if(!recipient){
@@ -50,13 +54,13 @@ const addRecipient = asyncHandler(async(req, res)=>{
 }); 
 
 const matchRecipient = asyncHandler(async(req, res)=>{
-    const {organNeeded, bloodType} = req.recipient;
+    const {organNeeded, bloodType} = req.body;
     
     if(!organNeeded || !bloodType){
         throw new ApiError(400, "Recipient information invalid");
     }
 
-    const matches = Donor.aggregate([
+    const matches = await Donor.aggregate([
         {
             $match: { 
                 bloodType, 
@@ -100,7 +104,7 @@ const matchRecipient = asyncHandler(async(req, res)=>{
         new ApiResponse(
             200, 
             matches, 
-            "No matches found!"
+            "match found"
         )
     );
 
