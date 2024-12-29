@@ -1,8 +1,8 @@
 import {asyncHandler} from '../utils/asyncHandler.js'
 import {ApiError} from "../utils/ApiError.js"
 import { Hospital } from '../models/hospital.models.js';
-import {uploadOnCloudinary} from "../utils/cloudinary.js"
 import { ApiResponse } from '../utils/ApiResponse.js';
+import {uploadOnCloudinary} from "../utils/cloudinary.js"
 import jwt from "jsonwebtoken"
 
 const generateRefreshAndAccessToken = async(hospitalId)=>{
@@ -305,11 +305,6 @@ const updateHospitalAvatar = asyncHandler(async(req, res)=>{
         hospital,
         "Avatar updated successfully"
     ));
-});
-
-const getHospitalProfile = asyncHandler(async(req, res)=>{
-    
-
 });
 
 export {

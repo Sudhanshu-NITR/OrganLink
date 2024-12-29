@@ -33,6 +33,7 @@ const donorScheme = new Schema(
             default: 'available',
         },
     }, 
-    {timestamps: true});
+    {timestamps: true}
+);
 
 export const Donor = mongoose.model("Donor", donorScheme)
