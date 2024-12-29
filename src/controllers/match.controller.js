@@ -3,7 +3,7 @@ import {ApiError} from "../utils/ApiError.js"
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { Mongoose } from 'mongoose';
 
-const getMatchesHistory = asyncHandler(async(requestAnimationFrame, res)=>{
+const getMatchesHistory = asyncHandler(async(req, res)=>{
     const {hospital_id} = req.body;
 
     if(!hospital_id){

@@ -223,7 +223,7 @@ const changeCurrentPassword = asyncHandler(async(Request, res)=>{
         throw new ApiError(400, "Invalid old password");
     }
 
-    user.password = newPassword;
+    hospital.password = newPassword;
     await user.save({validateBeforeSave: false});
 
     return res
