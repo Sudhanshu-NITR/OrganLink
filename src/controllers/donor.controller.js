@@ -52,6 +52,22 @@ const addDonor = asyncHandler(async(req, res)=>{
     )
 });
 
+const getRequests = asyncHandler(async(req, res)=>{
+    const {donor} = req.body;
+
+    if(!donor){
+        throw new ApiError(409, "Failed to fetch donor details");
+    }
+    const requests = donor.requests;
+    return res
+    .status(200)
+    .json(
+        200,
+        {requests},
+        "Requests fetched successfully"
+    )
+});
+
 const acceptRequest = asyncHandler(async(req, res)=>{
     const {donor, recipient} = req.body;
 
@@ -99,4 +115,4 @@ const acceptRequest = asyncHandler(async(req, res)=>{
     );
 });
 
-export { addDonor, acceptRequest };
+export { addDonor, acceptRequest, getRequests };

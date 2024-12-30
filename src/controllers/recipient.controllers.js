@@ -53,7 +53,7 @@ const addRecipient = asyncHandler(async(req, res)=>{
 
 }); 
 
-const matchRecipient = asyncHandler(async(req, res)=>{
+const findMatches = asyncHandler(async(req, res)=>{
     const {organNeeded, bloodType} = req.body;
     
     if(!organNeeded || !bloodType){
@@ -110,7 +110,36 @@ const matchRecipient = asyncHandler(async(req, res)=>{
 
 });
 
+const sendRequest = asyncHandler(async(req, res)=>{
+    const { donor } = req.body;
+
+    if(!donor){
+        throw new ApiError(400, "donor fetching uncesuccessfull");
+    }
+
+    const request = await Donor.findByIdAndUpdate(
+        donor._id,
+        {
+            $push: {
+                requests: recipientId
+            }
+        },
+        { new: true }
+    );
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            {},
+            "Request sent"
+        )
+    )
+});
+
 export {
     addRecipient,
-    matchRecipient
+    findMatches,
+    sendRequest
 }

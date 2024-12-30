@@ -32,6 +32,10 @@ const donorScheme = new Schema(
             enum: ['available', 'unavailable'],
             default: 'available',
         },
+        requests: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Recipient'  
+        }]
     }, 
     {timestamps: true}
 );
