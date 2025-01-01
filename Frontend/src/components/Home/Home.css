@@ -1,0 +1,22 @@
+.hero-container {
+    width: 100%; 
+    height: 600px;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-container .hero {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; 
+
+    mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 100%);
+    -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 100%);
+}
+.hero-container .cover {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; 
+
+    mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.0) 100%);
+}
