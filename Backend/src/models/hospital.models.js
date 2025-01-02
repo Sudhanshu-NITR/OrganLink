@@ -18,8 +18,7 @@ const hospitalSchema = new Schema(
             required: true,
         },
         location: {
-            type: String,
-            required: true,
+            type: String
         },
         phone: { 
             type: String, 
