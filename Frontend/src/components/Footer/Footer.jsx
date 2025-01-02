@@ -2,7 +2,54 @@ import React from 'react'
 import { NavLink } from 'react-router-dom'
 import { Link } from 'react-scroll'
 
+
+
 function Footer() {
+    const footerItems1 = [
+        {
+            name: "Home",
+            slug: "home",
+            active: true,
+        },
+        {
+            name: "About Us",
+            slug: "about",
+            active: true,
+        },
+        {
+            name: "Help",
+            slug: "help",
+            active: true,
+        },
+        {
+            name: "Gallery",
+            slug: "/gallery" ,
+            active: true
+        },
+    ]
+    const footerItems2 = [
+        {
+            name: "FAQs",
+            slug: "/faq",
+            active: true
+        },
+        {
+            name: "Privacy Policy",
+            slug: "/policy",
+            active: true
+        },
+        {
+            name: "Terms of Service",
+            slug: "/terms",
+            active: true
+        },
+        {
+            name: "Support",
+            slug: "/support",
+            active: true
+        },
+    ]
+
     return (
         <>
             <footer>
@@ -17,25 +64,40 @@ function Footer() {
                             </p>
                         </div>
                         <ul className='ml-[12rem] leading-8'>
-                            <Link to="home" 
-                            className="hover:text-[#646c3c]"  
-                            activeClassName="font-bold"
-                            spy={true} 
-                            smooth={true} 
-                            offset={-100} 
-                            duration={500} 
-                            >
-                                Home
-                            </Link>
-                            <NavLink to="/home" className="hover:text-[#646c3c]"><li>About Us</li></NavLink>
-                            <NavLink to="/home" className="hover:text-[#646c3c]"><li>Services</li></NavLink>
-                            <NavLink to="/home" className="hover:text-[#646c3c]"><li>Gallery</li></NavLink>
+                            {
+                                footerItems1.map((item)=>(
+                                    <li key={item.name}>
+                                        <Link to={item.slug} 
+                                        className="hover:text-[#646c3c]"  
+                                        activeClassName="font-bold"
+                                        spy={true} 
+                                        smooth={true} 
+                                        offset={-100} 
+                                        duration={500} 
+                                        >
+                                            {item.name}
+                                        </Link>
+                                    </li>
+                                ))
+                            }
                         </ul>
                         <ul className='ml-[16rem] leading-8'>
-                            <NavLink to="/home" className="hover:text-[#646c3c]"><li>FAQs</li></NavLink>
-                            <NavLink to="/home" className="hover:text-[#646c3c]"><li>Privacy Policy</li></NavLink>
-                            <NavLink to="/home" className="hover:text-[#646c3c]"><li>Terms of Service</li></NavLink>
-                            <NavLink to="/home" className="hover:text-[#646c3c]"><li>Support</li></NavLink>
+                                {
+                                footerItems2.map((item)=>(
+                                    <li key={item.name}>
+                                        <Link to={item.slug} 
+                                        className="hover:text-[#646c3c]"  
+                                        activeClassName="font-bold"
+                                        spy={true} 
+                                        smooth={true} 
+                                        offset={-100} 
+                                        duration={500} 
+                                        >
+                                            {item.name}
+                                        </Link>
+                                    </li>
+                                ))
+                            }
                         </ul>
                     </div>
                     <p className='mt-[2rem] flex justify-center items-center'>© 2024 OrganLink. All rights reserved.</p>

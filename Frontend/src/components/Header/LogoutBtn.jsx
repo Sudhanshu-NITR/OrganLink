@@ -15,7 +15,7 @@ function LogoutBtn() {
     }
     return (
         <div
-        className=''
+        className='inline-block px-6 py-2 duration-200 hover:bg-red-600 hover:text-white rounded-full hover:shadow-lg'
         >Logout</div>
     )
 }

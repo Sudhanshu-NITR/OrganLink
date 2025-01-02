@@ -11,7 +11,7 @@ function Home() {
                     <div class="absolute inset-0 bg-[#da7224] mix-blend-multiply cover"></div>
                     <div className='top-[4rem] left-[4rem] absolute inset-0 flex-col text-white inline-block'>
                         <div className='font-serif  mb-[2rem] text-6xl'>Connecting Lives, Saving Futures...</div>
-                        <NavLink to="/" className="bg-[#646c3c] h-[8vh] inline-flex p-[1.8rem]  font-serif items-center rounded-[2rem] text-[1.2rem] hover:bg-[#80904c] shadow-lg " activeClassName="">Join the Movement</NavLink>
+                        <NavLink to="/register" className="bg-[#646c3c] h-[8vh] inline-flex p-[1.8rem]  font-serif items-center rounded-[2rem] text-[1.2rem] hover:bg-[#80904c] shadow-lg " activeClassName="">Join the Movement</NavLink>
                     </div>
                     <div className='absolute top-[30rem] inset-0 h-48 w-full font-serif flex justify-evenly'>
                         <div className='h-full w-56 rounded-2xl shadow-xl p-[2rem] bg-[#fff4ec]'>
