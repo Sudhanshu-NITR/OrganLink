@@ -1,17 +1,28 @@
 import React from 'react'
-import {useDispatch} from 'react-redux'
-import { logout } from '../../store/authSlice'
+import { useDispatch } from 'react-redux';
+import { login, logout } from "../../store/authSlice.js";
+import axios from 'axios'
 
 function LogoutBtn() {
     const dispatch = useDispatch();
-    const logoutHandler = ()=>{
-        axios.get('/api/v1/logout')
-        .then(()=>{
-            useDispatch(logout);
-        })
-        .catch((error)=>{
-            console.log("Error while logging out, ERROR: ", error);
-        })
+    const logoutHandler = () =>{
+        try {
+            axios.get("/api/v1/hospitals/logout")
+            .then((response)=>{
+                if(response.status){
+                    console.log("User logged out Successfully!!");
+                    dispatch(logout);
+                }
+                else{
+                    console.log("Something went wrong while logging out");
+                }
+            })
+            .catch((error)=>{
+                console.log("User logout failed!! Error: ", error);
+            })
+        } catch (error) {
+            console.log("User logout failed!! Error: ", error);
+        }
     }
     return (
         <div

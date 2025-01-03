@@ -1,7 +1,7 @@
 import React from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { Link }  from 'react-scroll'
-import LogoutBtn from './LogoutBtn'
+import LogoutBtn from './LogoutBtn.jsx'
 import "./Header.css"
 import { useSelector } from 'react-redux'
 
