@@ -16,7 +16,11 @@ function Login() {
     const login = async(data) =>{
         setError("");
         try {
-            axios.get("/api/v1/hospitals/login", data)
+            axios.get("/api/v1/hospitals/login", data, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
             .then((response)=>{
                 if(response.status){
                     dispatch(authLogin(data));

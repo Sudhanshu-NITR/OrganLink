@@ -25,21 +25,19 @@ const generateRefreshAndAccessToken = async(hospitalId)=>{
 const registerHospital = asyncHandler(async(req, res)=>{
     
     // get hospital details from frontend
-    let {name, email, phone, password, location, address} = req.body;
+    let {name, email, phone, password, address} = req.body;
 
     // validation-not empty
     if(
-        [name, email, phone, password, location, address].some((field) => field?.trim() ==="")
+        [name, email, phone, password, address].some((field) => field?.trim() ==="")
     ){
         throw new ApiError(400, "All fields are required");
     }
-    // console.log(req.body);
-    // console.log(req.files);
     
     
     // check if user already exists: name, email
     const existingHospital = await Hospital.findOne({
-        $or: [{ name }, { location }, { email }]
+        $or: [{ name }, { email }]
     });
     if(existingHospital){
         throw new ApiError(409, "Hospital with same name or email already exists")
@@ -66,7 +64,7 @@ const registerHospital = asyncHandler(async(req, res)=>{
         email,
         phone,
         password,
-        location,
+        // location,
         address
     })
     
@@ -94,7 +92,8 @@ const registerHospital = asyncHandler(async(req, res)=>{
 
 const loginHospital = asyncHandler(async(req, res)=>{
     const {email, phone, password} = req.body;
-
+    console.log("Hi");
+    
     if(email==="" && phone===""){
         throw new ApiError(400, "Email id OR Phone no. is required!!");
     }

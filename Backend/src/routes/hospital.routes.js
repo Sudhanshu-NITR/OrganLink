@@ -21,7 +21,7 @@ router.route("/login").get(loginHospital);
 router.route("/logout").post(verifyJWT, logoutHospital);
 router.route("/refresh-token").post(refreshAcessToken);
 router.route("/change-password").post(verifyJWT, changeCurrentPassword);
-router.route("/current-user").get(verifyJWT, getCurrentHospital);
+router.route("/current-hospital").get(verifyJWT, getCurrentHospital);
 router.route("/update-account").patch(verifyJWT, updateAccountDetails);
 router.route("/avatar").patch(verifyJWT, upload.single("avatar"), updateHospitalAvatar);
 router.route("/match-history").get(getMatchesHistory)
