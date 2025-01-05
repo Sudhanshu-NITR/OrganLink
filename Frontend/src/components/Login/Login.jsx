@@ -15,8 +15,10 @@ function Login() {
 
     const login = async(data) =>{
         setError("");
+        console.log(data);
+        
         try {
-            axios.get("/api/v1/hospitals/login", data, {
+            axios.post("/api/v1/hospitals/login", data, {
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -25,7 +27,7 @@ function Login() {
                 if(response.status){
                     dispatch(authLogin(data));
                     console.log("User logged in Successfully!!");
-                    navigate('/register')
+                    navigate('/')
                 }
                 else{
                     console.log("User login unsuccessfull!!");

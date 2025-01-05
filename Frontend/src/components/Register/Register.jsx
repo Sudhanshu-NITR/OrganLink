@@ -14,17 +14,28 @@ function Register() {
     const [preview, setPreview] = useState(null);
     const createAccount = async(data)=>{
         setError("");
+        const formData = new FormData();
+        // console.log(data);
+        
+        Object.keys(data).forEach((key) => {
+            if(key === "avatar") {
+                formData.append(key, data[key][0]);
+            } 
+            else {
+                formData.append(key, data[key]);
+            }
+        });
         try {
-            axios.post("/api/v1/hospitals/register", data, {
+            axios.post("/api/v1/hospitals/register", formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
             })
             .then((response)=>{
                 if(response.status){
-                    const userData = axios.get("/api/v1/hospitals/current-hospital")
+                    const userData = response.data;
 
-                    if(userData) dispatch(login(userData));
+                    // if(userData) dispatch(login(userData));
                     navigate("/");
                 }
             })
@@ -40,6 +51,8 @@ function Register() {
 
     useEffect(() => {
         if (file && file[0]) {
+            console.log(file);
+            
           const imageUrl = URL.createObjectURL(file[0]);
           setPreview(imageUrl);
         }
@@ -149,7 +162,6 @@ function Register() {
                             <button
                             type="submit"
                             className='px-4 w-full py-2 rounded-lg bg-blue-600 text-white'
-
                             >Register</button>
                         </div>
                     </form>

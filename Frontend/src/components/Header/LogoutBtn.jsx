@@ -7,11 +7,13 @@ function LogoutBtn() {
     const dispatch = useDispatch();
     const logoutHandler = () =>{
         try {
+            
             axios.get("/api/v1/hospitals/logout")
             .then((response)=>{
                 if(response.status){
                     console.log("User logged out Successfully!!");
-                    dispatch(logout);
+                    dispatch(logout());
+                    navigate("/");
                 }
                 else{
                     console.log("Something went wrong while logging out");
@@ -27,7 +29,8 @@ function LogoutBtn() {
     return (
         <div
         className='inline-block px-6 py-2 duration-200 hover:bg-red-600 hover:text-white rounded-full hover:shadow-lg'
-        >Logout</div>
+        >
+        <button onClick={logoutHandler}>Logout</button></div>
     )
 }
 

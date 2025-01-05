@@ -4,6 +4,7 @@ import { Hospital } from '../models/hospital.models.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import {uploadOnCloudinary} from "../utils/cloudinary.js"
 import jwt from "jsonwebtoken"
+import { log } from 'console';
 
 const generateRefreshAndAccessToken = async(hospitalId)=>{
     try {
@@ -25,7 +26,7 @@ const generateRefreshAndAccessToken = async(hospitalId)=>{
 const registerHospital = asyncHandler(async(req, res)=>{
     
     // get hospital details from frontend
-    let {name, email, phone, password, address} = req.body;
+    const {name, email, phone, password, address} = req.body;
 
     // validation-not empty
     if(
@@ -42,9 +43,11 @@ const registerHospital = asyncHandler(async(req, res)=>{
     if(existingHospital){
         throw new ApiError(409, "Hospital with same name or email already exists")
     }
+
+    const timestart = Date.now();
     
     // check for images, check for avatar
-    // console.log(req.files )
+    // console.log(req.file)
     const avatarLocalPath = req.files?.avatar[0].path;
     if(!avatarLocalPath){
         throw new ApiError(400, "Avatar is required");
@@ -53,14 +56,18 @@ const registerHospital = asyncHandler(async(req, res)=>{
     // upload them to cloudinary
     const avatar = await uploadOnCloudinary(avatarLocalPath);
 
+    // console.log("Uploaded: ", Date.now() - timestart);
+
     if(!avatar){
         throw new ApiError(400, "Avatar failed to upload on Cloudinary");
     }
     
+    const avatarUrl = avatar.url
+
     // create user object - create entry in db
     const hospital = await Hospital.create({
         name, 
-        avatar: avatar.url,
+        avatar: avatarUrl,
         email,
         phone,
         password,
@@ -92,15 +99,16 @@ const registerHospital = asyncHandler(async(req, res)=>{
 
 const loginHospital = asyncHandler(async(req, res)=>{
     const {email, phone, password} = req.body;
-    console.log("Hi");
+    // console.log("Hi");
     
     if(email==="" && phone===""){
         throw new ApiError(400, "Email id OR Phone no. is required!!");
     }
-    // console.log(email, phone, password);
+    console.log(email, phone, password);
     const hospital = await Hospital.findOne({
         $or: [{email}, {phone}]
     })
+    
     if(!hospital){
         throw new ApiError(404, "Hospital entry does not exist");
     }

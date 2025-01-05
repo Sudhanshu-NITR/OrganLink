@@ -17,8 +17,8 @@ router.route("/register").post(
 )
 
 //secured routes
-router.route("/login").get(loginHospital);
-router.route("/logout").post(verifyJWT, logoutHospital);
+router.route("/login").post(loginHospital);
+router.route("/logout").get(verifyJWT, logoutHospital);
 router.route("/refresh-token").post(refreshAcessToken);
 router.route("/change-password").post(verifyJWT, changeCurrentPassword);
 router.route("/current-hospital").get(verifyJWT, getCurrentHospital);
