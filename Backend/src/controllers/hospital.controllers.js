@@ -6,6 +6,7 @@ import {uploadOnCloudinary} from "../utils/cloudinary.js"
 import jwt from "jsonwebtoken"
 import { log } from 'console';
 
+
 const generateRefreshAndAccessToken = async(hospitalId)=>{
     try {
         const hospital = await Hospital.findById(hospitalId);
@@ -104,7 +105,7 @@ const loginHospital = asyncHandler(async(req, res)=>{
     if(email==="" && phone===""){
         throw new ApiError(400, "Email id OR Phone no. is required!!");
     }
-    console.log(email, phone, password);
+    
     const hospital = await Hospital.findOne({
         $or: [{email}, {phone}]
     })
@@ -128,7 +129,7 @@ const loginHospital = asyncHandler(async(req, res)=>{
         httpOnly: true,
         secure: true
     } // Cookies are modifiable by anyone so we use this options object which makes it modifiable only by the server now
-
+    
     return res
     .status(200)
     .cookie("accessToken", accessToken, options)

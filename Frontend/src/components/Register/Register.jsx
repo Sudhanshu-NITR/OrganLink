@@ -36,7 +36,7 @@ function Register() {
                     const userData = response.data;
 
                     // if(userData) dispatch(login(userData));
-                    navigate("/");
+                    navigate("/admin");
                 }
             })
             .catch((error)=>{

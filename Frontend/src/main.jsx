@@ -1,7 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
-import App from './App.jsx'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import Layout from './Layout.jsx'
 import Home from './components/Home/Home.jsx'
@@ -10,11 +9,17 @@ import { Provider } from 'react-redux'
 import store from './store/store.js'
 import Login from './components/Login/Login.jsx'
 import Admin from './components/Admin/Admin.jsx'
+import AuthLayout from './AuthLayout.jsx'
+import Container from './Container.jsx'
 
 const router = createBrowserRouter([  
   {
     path: "/",
-    element: <Layout/>,
+    element: (
+      <Container>
+        <Layout/>
+      </Container>
+    ),
     children: [
       {
         path: "",
@@ -26,11 +31,19 @@ const router = createBrowserRouter([
       },
       {
         path: "/login",
-        element: <Login />
+        element: (
+          <AuthLayout authentication={false}>
+            <Login />
+          </AuthLayout>
+        )
       },
       {
         path: "/admin",
-        element: <Admin />
+        element: (
+          <AuthLayout authentication={true}>
+            <Admin />
+          </AuthLayout>
+        )
       }
     ]
   }

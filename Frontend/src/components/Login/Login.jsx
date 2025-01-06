@@ -27,7 +27,7 @@ function Login() {
                 if(response.status){
                     dispatch(authLogin(data));
                     console.log("User logged in Successfully!!");
-                    navigate('/')
+                    navigate('/admin')
                 }
                 else{
                     console.log("User login unsuccessfull!!");

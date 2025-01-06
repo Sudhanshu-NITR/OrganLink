@@ -39,8 +39,9 @@ function Header() {
                 </div>
                 <nav className="flex text-lg font-medium items-center flex-wrap space-x-4">
                     {
-                        navItems.map((item)=>(
+                        navItems.map((item, index)=>(
                             <Link to={item.slug}
+                            key = {index}
                             className=" hover:border-white hover:rounded-[2rem] hover:border-[1.2px] duration-200 h-[7vh] w-[7vw] flex justify-center items-center hover:shadow-lg"    
                             activeClassName="font-bold"
                             spy={true} 
