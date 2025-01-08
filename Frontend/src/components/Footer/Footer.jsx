@@ -53,7 +53,7 @@ function Footer() {
     return (
         <>
             <footer>
-                <div className='p-[2rem] bg-[#502c04] mt-[2rem] text-[#ddd6ce]'>
+                <div className='p-[2rem] bg-[#502c04] text-[#ddd6ce]'>
                     <div className='flex mt-[1rem]'>
                         <div className='flex-col left-0'>
                             <div className='text-3xl'>
@@ -69,7 +69,7 @@ function Footer() {
                                     <li key={item.name}>
                                         <Link to={item.slug} 
                                         className="hover:text-[#646c3c]"  
-                                        activeClassName="font-bold"
+                                        activeClass="font-bold"
                                         spy={true} 
                                         smooth={true} 
                                         offset={-100} 
@@ -87,7 +87,7 @@ function Footer() {
                                     <li key={item.name}>
                                         <Link to={item.slug} 
                                         className="hover:text-[#646c3c]"  
-                                        activeClassName="font-bold"
+                                        activeClass="font-bold"
                                         spy={true} 
                                         smooth={true} 
                                         offset={-100} 

@@ -323,5 +323,5 @@ export {
     changeCurrentPassword,
     getCurrentHospital,
     updateAccountDetails,
-    updateHospitalAvatar
+    updateHospitalAvatar,
 };

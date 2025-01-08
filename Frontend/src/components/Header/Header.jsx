@@ -43,7 +43,7 @@ function Header() {
                             <Link to={item.slug}
                             key = {index}
                             className=" hover:border-white hover:rounded-[2rem] hover:border-[1.2px] duration-200 h-[7vh] w-[7vw] flex justify-center items-center hover:shadow-lg"    
-                            activeClassName="font-bold"
+                            activeClass="font-bold"
                             spy={true} 
                             smooth={true} 
                             offset={-100} 
@@ -56,7 +56,7 @@ function Header() {
                     {!authStatus && (
                         <NavLink to='/login'
                         className=" hover:border-white hover:rounded-[2rem] hover:border-[1.2px] duration-200 h-[7vh] w-[7vw] flex justify-center items-center hover:shadow-lg"    
-                        activeClassName="font-bold"
+                        activeClass="font-bold"
                         >
                             Login
                         </NavLink>
@@ -69,7 +69,7 @@ function Header() {
                     {!authStatus && (
                         <NavLink to="/register" 
                         className="bg-[#646c3c] duration-200 h-[8vh] w-[10vw] flex justify-center items-center rounded-[2rem] hover:bg-[#80904c] shadow-lg " 
-                        activeClassName=""
+                        activeClass=""
                         >
                             Get Started
                         </NavLink>

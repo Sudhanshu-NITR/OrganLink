@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { loginHospital, logoutHospital, registerHospital, refreshAcessToken, getCurrentHospital, changeCurrentPassword, updateAccountDetails, updateHospitalAvatar } from "../controllers/hospital.controllers.js";
+import { loginHospital, logoutHospital, registerHospital, refreshAcessToken, getCurrentHospital, changeCurrentPassword, updateAccountDetails, updateHospitalAvatar} from "../controllers/hospital.controllers.js";
 import { getMatchesHistory } from "../controllers/match.controller.js";
 import { upload } from "../middlewares/multer.middleware.js"
 import { verifyJWT } from "../middlewares/auth.middleware.js"
