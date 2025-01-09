@@ -35,7 +35,7 @@ const donorScheme = new Schema(
         requests: [{
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Recipient'  
-        }]
+        },]
     }, 
     {timestamps: true}
 );

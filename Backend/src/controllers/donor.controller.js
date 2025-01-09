@@ -57,12 +57,13 @@ const getRequests = asyncHandler(async(req, res)=>{
         throw new ApiError(409, "Failed to fetch donor details");
     }
     const requests = donor.requests;
+    const requestList = await Donor.findById(donor._id).populate('requests');
     return res
     .status(200)
     .json(
-        200,
-        {requests},
-        "Requests fetched successfully"
+        new ApiResponse(200,
+        requestList,
+        "Requests fetched successfully")
     )
 });
 

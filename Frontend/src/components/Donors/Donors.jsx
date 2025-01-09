@@ -24,7 +24,16 @@ function Donors({}) {
         <>
             <div className='w-full h-full flex flex-col items-center justify-center p-16 space-y-4'>
                 {
-                    donors
+                    donorList.map((item, index)=>(
+                        <DonorCard 
+                        status={item.status} 
+                        age={item.age}
+                        bloodType={item.bloodType} 
+                        organType={item.organType}
+                        key={index}
+                        id={item._id}
+                        />
+                    ))
                 }
             </div>
         </>

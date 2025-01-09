@@ -1,11 +1,12 @@
+import axios from 'axios'
 import React from 'react'
 
-function DonorCard({status="available", fullName, age, bloodType, organType}) {
+function DonorCard({status="available", fullName, age, bloodType, organType, id}) {
     return (
         <> 
             <div className='min-w-[40rem] bg-gray-100 border rounded-xl border-black/10 text-lg font-serif min-h-[10rem] p-8 flex justify-between'>
                 <div>
-                    <h3 className='text-xl font-semibold'>Jonh Doe</h3>
+                    <h3 className='text-xl font-semibold'>{fullName}</h3>
                     <p>Age: {age}</p>
                     <p>BloodGroup: {bloodType}</p>
                     <p>Organ Type: {organType}</p>
