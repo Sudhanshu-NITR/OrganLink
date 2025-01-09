@@ -6,7 +6,7 @@ const router = Router();
 
 router.use(verifyJWT);
 
-router.route("/add-donor/:hospital_id").post(addDonor);
+router.route("/add-donor").post(addDonor);
 router.route("/get-requests").get(getRequests);
 router.route("/accept-request").post(acceptRequest);
 router.route("/donors").get(donorList);

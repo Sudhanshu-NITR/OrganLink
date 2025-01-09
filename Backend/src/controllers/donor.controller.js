@@ -121,7 +121,7 @@ const donorList = asyncHandler(async(req, res)=>{
     const hospital_id = hospital._id;
     
 
-    const donors = Donor.aggregate([
+    const donors = await Donor.aggregate([
         {
             $match: {
                 hospital: hospital_id,

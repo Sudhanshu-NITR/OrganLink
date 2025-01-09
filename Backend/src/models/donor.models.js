@@ -1,6 +1,8 @@
 import mongoose, {Schema} from "mongoose";
+import { Recipient } from "./recipient.models.js";
+import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
 
-const donorScheme = new Schema(
+const donorSchema = new Schema(
     {
         fullName:{
             type: String,
@@ -35,9 +37,15 @@ const donorScheme = new Schema(
         requests: [{
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Recipient'  
-        },]
+        },],
+        recipient: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Recipient'
+        }
     }, 
     {timestamps: true}
 );
 
-export const Donor = mongoose.model("Donor", donorScheme)
+donorSchema.plugin(mongooseAggregatePaginate);
+
+export const Donor = mongoose.model("Donor", donorSchema)

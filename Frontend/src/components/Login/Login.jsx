@@ -82,7 +82,7 @@ function Login() {
                                 required:true,
                                 validate: {
                                     matchPattern: (value) => /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value) || "Email address must be a valid address"
-                                }
+                                },
                             })}
                         />
                         <Input 
