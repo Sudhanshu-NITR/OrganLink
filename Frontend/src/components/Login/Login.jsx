@@ -27,9 +27,11 @@ function Login() {
                 if(response.status){
                     dispatch(authLogin(data));
                     console.log("User logged in Successfully!!");
-                    navigate('/admin')
+                    navigate('/admin');
                 }
                 else{
+                    dispatch(logout());
+                    navigate("/");
                     console.log("User login unsuccessfull!!");
                 }
             })

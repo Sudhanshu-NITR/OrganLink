@@ -35,7 +35,7 @@ function Register() {
                 if(response.status){
                     const userData = response.data;
 
-                    // if(userData) dispatch(login(userData));
+                    if(userData) dispatch(login(userData));
                     navigate("/admin");
                 }
             })

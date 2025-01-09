@@ -5,9 +5,11 @@ import {ApiError} from "../utils/ApiError.js"
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { Hospital } from "../models/hospital.models.js";
 import { Match } from "../models/match.models.js"
+import { Mongoose } from 'mongoose';
+import { log } from "node:console";
 
 const addDonor = asyncHandler(async(req, res)=>{
-    const {hospital_id} = req.params;
+    const hospital = req.hospital;
     let {fullName, age, bloodType, organType} = req.body;
 
     if(
@@ -23,10 +25,6 @@ const addDonor = asyncHandler(async(req, res)=>{
     if(existingRequest){
         throw new ApiError(409, "Donor already exists");
     }
-
-    const hospital = await Hospital.findById(hospital_id).select(
-        "email phone name address"
-    );
 
     const donor = await Donor.create({
         fullName, 
@@ -107,12 +105,54 @@ const acceptRequest = asyncHandler(async(req, res)=>{
     .json(
         new ApiResponse(
             200,
-            {
-                match,
-            },
+            match,
             "Match created successfully"
         )
     );
 });
 
-export { addDonor, acceptRequest, getRequests };
+const donorList = asyncHandler(async(req, res)=>{
+    const hospital = req.hospital;
+    
+    if(!hospital){
+        throw new ApiError(401, "User unauthorized");
+    }
+    const hospital_id = hospital._id;
+    
+
+    const donors = Donor.aggregate([
+        {
+            $match: {
+                hospital: hospital_id,
+            },
+        },
+        {
+            $addFields: {
+                // Assign 0 to "available" and 1 to "unavailable"
+                sortStatus: { $cond: [{ $eq: ["$status", "unavailable"] }, 1, 0] },
+            },
+        },
+        {
+            $sort: {
+                sortStatus: 1, // Available first 
+                createdAt: -1, // Most recent donors first
+            },
+        },
+    ]);
+
+    if(!donors){
+        throw new ApiError(409, "Error while collecting donors data");
+    }
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200, 
+            donors,
+            "donor list fetched successfully"
+        )
+    );
+});
+
+export { addDonor, acceptRequest, getRequests, donorList };

@@ -34,7 +34,7 @@ function Admin() {
                 <div className='bg-white rounded-lg shadow-lg w-[80%] mt-10 m-5 p-16'>
                     <div className='w-full flex flex-wrap'>
                         <div className='w-32 h-32 bg-white shadow-xl rounded-full flex justify-center items-center'>
-                            <img src="../hospital.png" className='w-40 rounded-full' />
+                            <img src="../hospital.png" className='w-full rounded-full' />
                         </div>
                         <div className='flex space-x-16'>
                             <div className='flex-col space-y-4 flex-wrap max-w-32 text-center'>

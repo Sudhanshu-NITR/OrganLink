@@ -11,6 +11,7 @@ import Login from './components/Login/Login.jsx'
 import Admin from './components/Admin/Admin.jsx'
 import AuthLayout from './AuthLayout.jsx'
 import Container from './Container.jsx'
+import Donors from './components/Donors/Donors.jsx'
 
 const router = createBrowserRouter([  
   {
@@ -32,7 +33,7 @@ const router = createBrowserRouter([
       {
         path: "/login",
         element: (
-          <AuthLayout authentication={false}>
+          <AuthLayout authentication={false} request={"/login"}>
             <Login />
           </AuthLayout>
         )
@@ -40,8 +41,16 @@ const router = createBrowserRouter([
       {
         path: "/admin",
         element: (
-          <AuthLayout authentication={true}>
+          <AuthLayout authentication={true} request={"/admin"}>
             <Admin />
+          </AuthLayout>
+        )
+      },
+      {
+        path: "/donors",
+        element: (
+          <AuthLayout authentication={true} request={"/donors"}>
+            <Donors />
           </AuthLayout>
         )
       }

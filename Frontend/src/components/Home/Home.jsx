@@ -4,8 +4,7 @@ import "./Home.css"
 import { useSelector } from 'react-redux'
 
 function Home() {
-    const userData = useSelector((state)=> state.userData);
-    console.log(userData);
+    const userData = useSelector((state)=> state.auth.userData);
     
     return (
         <>

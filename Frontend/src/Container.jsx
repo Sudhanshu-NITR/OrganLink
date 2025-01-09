@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { login, logout } from "./store/authSlice";
 import axios from "axios";
 import Sidebar, { SidebarItem } from "./components/Sidebar/Sidebar.jsx";
-import { NavLink } from "react-router-dom";
 import {
   LifeBuoy,
   Receipt,
@@ -18,7 +17,7 @@ import {
 
 function Container({ children }) {
   const navigate = useNavigate();
-  const authStatus = useSelector((state) => state.auth.status); // Ensure 'auth' is the correct slice name
+  let authStatus = useSelector((state) => state.auth.status);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -27,8 +26,10 @@ function Container({ children }) {
         const response = await axios.get("/api/v1/hospitals/current-hospital");
         if (response.status) {
           dispatch(login(response.data));
+          authStatus = true;
         } else {
           dispatch(logout());
+          authStatus = false;
         }
       } catch (error) {
         console.error("Authentication error:", error);
@@ -47,7 +48,7 @@ function Container({ children }) {
             <Sidebar>
                 <SidebarItem icon={<LayoutDashboard size={20} />} text="Dashboard" link="/admin"/>
                 <SidebarItem icon={<BarChart3 size={20} />} text="Statistics" />
-                <SidebarItem icon={<UserCircle size={20} />} text="Users" />
+                <SidebarItem icon={<UserCircle size={20} />} text="Donors" link="/donors"/>
                 <SidebarItem icon={<Boxes size={20} />} text="Inventory" />
                 <SidebarItem icon={<Package size={20} />} text="Orders" alert />
                 <SidebarItem icon={<Receipt size={20} />} text="Billings" />
@@ -57,7 +58,7 @@ function Container({ children }) {
             </Sidebar>
             )}
         </div>
-        <div className={` z-0 flex-1 overflow-auto ${authStatus? "ml-[4.29rem]" : "ml-0"}`}>
+        <div className={`z-0 flex-1 overflow-auto ${authStatus? "ml-[4.29rem]" : "ml-0"}`}>
             {children}
         </div>
     </div>
