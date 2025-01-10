@@ -57,12 +57,34 @@ const getRequests = asyncHandler(async(req, res)=>{
         throw new ApiError(409, "Failed to fetch donor details");
     }
     const requests = donor.requests;
-    const requestList = await Donor.findById(donor._id).populate('requests');
+    const requestList = await Donor.findById(donor._id).populate({
+        path: 'requests.recipient'
+    });
+
+    const modifiedRequestList = await Donor.aggregate([
+        {
+            $match:{
+                _id: donor._id,
+            }
+        },
+        {
+            $lookup: {
+                from: "hospitals", 
+                localField: "hospital", 
+                foreignField: "_id", 
+                as: "hospital" 
+            }
+        },
+        {
+            $unwind: "$hospital"
+        }
+    ]);
+
     return res
     .status(200)
     .json(
         new ApiResponse(200,
-        requestList,
+        modifiedRequestList,
         "Requests fetched successfully")
     )
 });

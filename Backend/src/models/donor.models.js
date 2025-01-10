@@ -35,8 +35,15 @@ const donorSchema = new Schema(
             default: 'available',
         },
         requests: [{
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Recipient'  
+            recipient: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Recipient'
+            },
+            status: {
+                type: String,
+                enum: ['Accepted', 'Rejected', 'Pending'],
+                default: 'Pending'
+            }
         },],
         recipient: {
             type: mongoose.Schema.Types.ObjectId,

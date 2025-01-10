@@ -1,56 +1,196 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
-import { Trash2 } from 'lucide-react'
+import { Trash2, ChevronDown, ChevronUp, Check, X } from 'lucide-react'
+import axios from 'axios'
 
-function DonorCard({status="available", fullName, age, bloodType, organType, id}) {
+function DonorCard({ status = "available", fullName, age, bloodType, organType, id }) {
+    const [isOpen, setIsOpen] = useState(false);
+    const [requestList, setRequestList] = useState([]);
+    const [donorStatus, setDonorStatus] = useState(status);
+    
+    useEffect(() => {
+        const fetchRequest = async () => {
+            try {
+                const response = await axios.get('/api/v1/hospitals/donor/get-requests');
+                setRequestList(response.data.data);
+            } catch (error) {
+                console.log('Request List fetching failed, ERROR: ', error);
+            }
+        };
+
+        fetchRequest();
+    }, []);
+    
     return (
-        <> 
-            <div className='min-w-[50rem] bg-gray-100 border rounded-xl border-black/10 text-lg font-serif min-h-[10rem] p-8 flex justify-between'>
+        <div className="relative">
+            <div className="min-w-[50rem] bg-gray-100 border rounded-xl border-black/10 text-lg font-serif min-h-[10rem] p-8 flex justify-between">
                 <div>
-                    <h3 className='text-xl font-semibold'>{fullName}</h3>
+                    <h3 className="text-xl font-semibold">{fullName}</h3>
                     <p>Age: {age}</p>
-                    <p>BloodGroup: {bloodType}</p>
+                    <p>Blood Group: {bloodType}</p>
                     <p>Organ Type: {organType}</p>
                 </div>
-                <div className='flex flex-col items-end justify-center'>
-                    {status==="available" 
-                    ? <Cross id={id}/>
-                    : <Check id={id}/>
+                <div className="flex flex-col items-end justify-center">
+                    {donorStatus === "available" 
+                        ? <CrossButton id={id} isOpen={isOpen} setIsOpen={setIsOpen} />
+                        : <CheckButton id={id} />
                     }
                 </div>
             </div>
-        </>
+            
+            {isOpen && (
+                <div className="absolute left-0 right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
+                    <div className="p-6">
+                        <h4 className="font-semibold mb-2">Recent Requests</h4>
+                        <div className="space-y-3">
+                            <RequestItem 
+                                recipientName="Jane Smith"
+                                hospitalName="Memorial Hospital"
+                                date="2025-01-07"
+                                status="Rejected"
+                            />
+                            <RequestItem 
+                                recipientName="Mike Johnson"
+                                hospitalName="General Hospital"
+                                date="2025-01-06"
+                                status="Pending"
+                            />
+                            {requestList.map((item, index) => (
+                                <RequestItem 
+                                    key={index}
+                                    recipientName={item.fullName}
+                                    hospitalName={item.hospital.name}
+                                    date={item.createdAt}
+                                    status={item.status}
+                                    recipientId={item._id}
+                                    donorStatus={donorStatus}
+                                    setDonorStatus={setDonorStatus}
+                                />
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
     )
 }
 
-function Check({id}){
-    return(
-        <>
-            Status: matched <p className='text-4xl font-extrabold text-green-600'>&#x2713;</p>
-            <NavLink to={`/request-history/:${id}`}>
-                <button
-                    type="submit"
-                    className='px-4 w-full py-2 rounded-lg bg-blue-400 text-white'
-                >Request History</button>
-            </NavLink>
-        </>     
-    )
-}
+function RequestItem({ recipientName, hospitalName, date, status, donorStatus, setDonorStatus }) {
+    
+    const [requestStatus, setRequestStatus] = useState(status);
+    let statusColor = requestStatus === "Pending" ? "text-yellow-600" : "text-red-600";
+    if(requestStatus=="Accepted") statusColor="text-green-600"
 
-function Cross({id}){
-    return(
-        <>
-            Status: unmatched <p className='text-4xl font-extrabold text-red-600'>{'\u00D7'}</p>
-            <div className='flex items-end space-x-4'>
-                <NavLink to={`/recipient-details/:${id}`}>
-                    <button
-                        type="submit"
-                        className='px-4 w-full py-2 rounded-lg bg-blue-400 text-white'
-                    >Requests</button>
-                </NavLink>
-                <button className='bg-red-600 w-8 h-8 flex justify-center items-center border-black rounded-md'><Trash2 /></button>
+    const handleAccept = () => {
+        try {
+            axios.patch(`/api/v1/hospitals/donor/accept-request/${id}`,{
+                status:"Accepted",
+            })
+            .then((response)=>{
+                if(response.status){
+                    console.log("Request accepted");
+                    setRequestStatus("Accepted");
+                    setDonorStatus("unavailable");
+                }
+            })
+        } catch (error) {
+            console.log("Error while accepting request, Error: ", error);
+        }
+    };
+
+    const handleReject = () => {
+        try {
+            axios.patch(`/api/v1/hospitals/donor/reeject-request/${id}`,{
+                status:"Rejected",
+            })
+            .then((response)=>{
+                if(response.status){
+                    console.log("Request rejected");
+                    setRequestStatus("Rejected");
+                }
+            })
+        } catch (error) {
+            console.log("Error while accepting request, Error: ", error);
+        }
+    };
+    
+    return (
+        <div className="flex items-center justify-between py-4 px-4 hover:bg-gray-50 rounded-lg">
+            <div>
+                <p className="font-medium">{recipientName}</p>
+                <p className="text-sm text-gray-600">{hospitalName}</p>
             </div>
-        </>
+            <div className="flex items-center gap-4">
+                <div className="text-right">
+                    <p className="text-sm text-gray-600">{date}</p>
+                    <p className={`text-sm font-medium ${statusColor}`}>{status}</p>
+                </div>
+                {requestStatus=="Pending" && 
+                    <div className="flex gap-2">
+                        <button
+                            onClick={handleAccept}
+                            className="w-6 h-6 bg-green-100 hover:bg-green-200 transition-colors rounded flex items-center justify-center"
+                            title="Accept Request"
+                        >
+                            <Check size={14} className="text-green-600" />
+                        </button>
+                        <button
+                            onClick={handleReject}
+                            className="w-6 h-6 bg-red-100 hover:bg-red-200 transition-colors rounded flex items-center justify-center"
+                            title="Reject Request"
+                        >
+                            <X size={14} className="text-red-600" />
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+    )
+}
+
+function CheckButton({ id }) {
+    return (
+        <div className="flex flex-col items-end">
+            <div className="flex items-center gap-2">
+                Status: matched 
+                <span className="text-4xl font-extrabold text-green-600">✓</span>
+            </div>
+            <NavLink to={`/request-history/${id}`}>
+                <button
+                    type="button"
+                    className="px-4 w-full py-2 rounded-lg bg-blue-400 text-white hover:bg-blue-500 transition-colors"
+                >
+                    Request History
+                </button>
+            </NavLink>
+        </div>
+    )
+}
+
+function CrossButton({ id, isOpen, setIsOpen }) {
+    return (
+        <div className="flex flex-col items-end">
+            <div className="flex items-center gap-2">
+                Status: unmatched 
+                <span className="text-4xl font-extrabold text-red-600">×</span>
+            </div>
+            <div className="flex items-end space-x-4">
+                <button
+                    type="button"
+                    onClick={() => setIsOpen(!isOpen)}
+                    className="px-4 py-2 rounded-lg bg-blue-400 text-white hover:bg-blue-500 transition-colors flex items-center gap-2"
+                >
+                    Requests
+                    {isOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                </button>
+                <button 
+                    type="button"
+                    className="bg-red-600 hover:bg-red-700 transition-colors w-8 h-8 flex justify-center items-center rounded-md text-white"
+                >
+                    <Trash2 size={20} />
+                </button>
+            </div>
+        </div>
     )
 }
 
