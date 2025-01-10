@@ -10,14 +10,14 @@ function Donors() {
         const fetchDonors = async () => {
             try {
                 const response = await axios.get('/api/v1/hospitals/donor/donors');
-                setDonorList(response.data.data); // Update the state with the fetched data
+                setDonorList(response.data.data);
             } catch (error) {
                 console.log('Donor data fetching failed, ERROR: ', error);
             }
         };
 
         fetchDonors();
-    }, []); // Empty dependency array ensures it runs only once after the component mounts
+    }, []);
 
     return (
         <div className='w-full h-full flex flex-col items-center justify-center p-16 space-y-4 bg-[#fff4ec]'>
@@ -31,7 +31,7 @@ function Donors() {
                         age={item.age}
                         bloodType={item.bloodType}
                         organType={item.organType}
-                        id={item._id.toString()}
+                        id={item._id}
                     />
                 ))
             ) : (

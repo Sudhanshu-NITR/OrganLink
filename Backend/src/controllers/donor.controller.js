@@ -5,8 +5,7 @@ import {ApiError} from "../utils/ApiError.js"
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { Hospital } from "../models/hospital.models.js";
 import { Match } from "../models/match.models.js"
-import { Mongoose } from 'mongoose';
-import { log } from "node:console";
+import mongoose from 'mongoose';
 
 const addDonor = asyncHandler(async(req, res)=>{
     const hospital = req.hospital;
@@ -32,7 +31,8 @@ const addDonor = asyncHandler(async(req, res)=>{
         bloodType, 
         organType, 
         status: "available",
-        hospital
+        hospital,
+        requests: [],
     });
 
     if(!donor){
@@ -51,46 +51,45 @@ const addDonor = asyncHandler(async(req, res)=>{
 });
 
 const getRequests = asyncHandler(async(req, res)=>{
-    const {donor} = req.body;
+    const { donor_id } = req.params;
 
+    if(!donor_id){
+        throw new ApiError(409, "Failed to fetch donor id");
+    }
+
+    const donor = await Donor.findById(new mongoose.Types.ObjectId(donor_id.toString().trim()));
+    
     if(!donor){
         throw new ApiError(409, "Failed to fetch donor details");
     }
-    const requests = donor.requests;
-    const requestList = await Donor.findById(donor._id).populate({
-        path: 'requests.recipient'
-    });
 
-    const modifiedRequestList = await Donor.aggregate([
-        {
-            $match:{
-                _id: donor._id,
-            }
-        },
-        {
-            $lookup: {
-                from: "hospitals", 
-                localField: "hospital", 
-                foreignField: "_id", 
-                as: "hospital" 
-            }
-        },
-        {
-            $unwind: "$hospital"
-        }
-    ]);
+    const requests = donor.requests;
+    
+    const requestList = await Promise.all(
+        requests.map(async (request) => {
+            const recipient = await Recipient.findById(request.recipient);
+            const hospital = await Hospital.findById(request.recipient.hospital);
+            return {
+                ...request.toObject(),
+                recipient: recipient,
+                hospital: hospital
+            };
+        })
+    );
+    
+    requests.length = 0; 
 
     return res
     .status(200)
     .json(
         new ApiResponse(200,
-        modifiedRequestList,
+        requestList,
         "Requests fetched successfully")
     )
 });
 
 const acceptRequest = asyncHandler(async(req, res)=>{
-    const {donor, recipient} = req.body;
+    const {donor, recipient} = req.params;
 
     if(!donor || !recipient){
         throw new ApiError(400, "Error while retrieving donor & reciever data");

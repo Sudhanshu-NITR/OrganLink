@@ -7,8 +7,8 @@ const router = Router();
 router.use(verifyJWT);
 
 router.route("/add-donor").post(addDonor);
-router.route("/get-requests").get(getRequests);
-router.route("/accept-request").post(acceptRequest);
+router.route("/get-requests/:donor_id").get(getRequests);
+router.route("/accept-request").patch(acceptRequest);
 router.route("/donors").get(donorList);
 
 export default router;

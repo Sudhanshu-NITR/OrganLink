@@ -1,18 +1,25 @@
 import React, { useState, useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
-import { Trash2, ChevronDown, ChevronUp, Check, X } from 'lucide-react'
+import { Trash2, ChevronDown, ChevronUp, Check, X, LogIn } from 'lucide-react'
 import axios from 'axios'
 
 function DonorCard({ status = "available", fullName, age, bloodType, organType, id }) {
     const [isOpen, setIsOpen] = useState(false);
     const [requestList, setRequestList] = useState([]);
     const [donorStatus, setDonorStatus] = useState(status);
-    
+
     useEffect(() => {
         const fetchRequest = async () => {
             try {
-                const response = await axios.get('/api/v1/hospitals/donor/get-requests');
-                setRequestList(response.data.data);
+                axios.get(`/api/v1/hospitals/donor/get-requests/${id}`)
+                .then((response)=>{
+                    if(response.status){
+                        setRequestList(response.data);
+                    }
+                })
+                .catch((error)=>{
+                    console.log('Request List fetching failed, ERROR: ', error);
+                });
             } catch (error) {
                 console.log('Request List fetching failed, ERROR: ', error);
             }
@@ -55,18 +62,22 @@ function DonorCard({ status = "available", fullName, age, bloodType, organType, 
                                 date="2025-01-06"
                                 status="Pending"
                             />
-                            {requestList.map((item, index) => (
-                                <RequestItem 
-                                    key={index}
-                                    recipientName={item.fullName}
-                                    hospitalName={item.hospital.name}
-                                    date={item.createdAt}
-                                    status={item.status}
-                                    recipientId={item._id}
-                                    donorStatus={donorStatus}
-                                    setDonorStatus={setDonorStatus}
-                                />
-                            ))}
+                            {requestList?.length > 0 ? (
+                                requestList.map((item, index) => (
+                                    <RequestItem 
+                                        key={item._id || index} // Use unique key, fallback to index
+                                        recipientName={item.fullName || 'Unknown'}
+                                        hospitalName={item.hospital?.name || 'Unknown'}
+                                        date={item.createdAt ? format(new Date(item.createdAt), 'dd/MM/yyyy') : 'N/A'}
+                                        status={item.status || 'Pending'}
+                                        recipientId={item.recipient._id}
+                                        donorStatus={donorStatus}
+                                        setDonorStatus={setDonorStatus}
+                                    />
+                                ))
+                            ) : (
+                                <p>No requests available</p>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -75,7 +86,7 @@ function DonorCard({ status = "available", fullName, age, bloodType, organType, 
     )
 }
 
-function RequestItem({ recipientName, hospitalName, date, status, donorStatus, setDonorStatus }) {
+function RequestItem({ recipientName, hospitalName, date, status, donorStatus, setDonorStatus, recipient_id }) {
     
     const [requestStatus, setRequestStatus] = useState(status);
     let statusColor = requestStatus === "Pending" ? "text-yellow-600" : "text-red-600";
@@ -83,7 +94,7 @@ function RequestItem({ recipientName, hospitalName, date, status, donorStatus, s
 
     const handleAccept = () => {
         try {
-            axios.patch(`/api/v1/hospitals/donor/accept-request/${id}`,{
+            axios.patch(`/api/v1/hospitals/donor/accept-request/${recipient_id}`,{
                 status:"Accepted",
             })
             .then((response)=>{
