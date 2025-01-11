@@ -3,18 +3,27 @@ import { NavLink } from 'react-router-dom'
 import { Trash2, ChevronDown, ChevronUp, Check, X, LogIn } from 'lucide-react'
 import axios from 'axios'
 
-function DonorCard({ status = "available", fullName, age, bloodType, organType, id }) {
+function DonorCard({
+    status = "available", 
+    fullName, 
+    age, 
+    bloodType, 
+    organType, 
+    id,
+    donorList,
+    setDonorList
+}) {
     const [isOpen, setIsOpen] = useState(false);
     const [requestList, setRequestList] = useState([]);
     const [donorStatus, setDonorStatus] = useState(status);
 
     useEffect(() => {
-        const fetchRequest = async () => {
+        (async () => {
             try {
-                axios.get(`/api/v1/hospitals/donor/get-requests/${id}`)
+                await axios.get(`/api/v1/hospitals/donor/get-requests/${id}`)
                 .then((response)=>{
                     if(response.status){
-                        setRequestList(response.data);
+                        setRequestList(response.data.data);
                     }
                 })
                 .catch((error)=>{
@@ -23,9 +32,8 @@ function DonorCard({ status = "available", fullName, age, bloodType, organType, 
             } catch (error) {
                 console.log('Request List fetching failed, ERROR: ', error);
             }
-        };
+        })();
 
-        fetchRequest();
     }, []);
     
     return (
@@ -39,7 +47,7 @@ function DonorCard({ status = "available", fullName, age, bloodType, organType, 
                 </div>
                 <div className="flex flex-col items-end justify-center">
                     {donorStatus === "available" 
-                        ? <CrossButton id={id} isOpen={isOpen} setIsOpen={setIsOpen} />
+                        ? <CrossButton id={id} isOpen={isOpen} setIsOpen={setIsOpen} donorList={donorList} setDonorList={setDonorList}/>
                         : <CheckButton id={id} />
                     }
                 </div>
@@ -48,7 +56,7 @@ function DonorCard({ status = "available", fullName, age, bloodType, organType, 
             {isOpen && (
                 <div className="absolute left-0 right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
                     <div className="p-6">
-                        <h4 className="font-semibold mb-2">Recent Requests</h4>
+                        <h4 className="font-semibold mb-2 ">Recent Requests</h4>
                         <div className="space-y-3">
                             <RequestItem 
                                 recipientName="Jane Smith"
@@ -62,22 +70,42 @@ function DonorCard({ status = "available", fullName, age, bloodType, organType, 
                                 date="2025-01-06"
                                 status="Pending"
                             />
-                            {requestList?.length > 0 ? (
-                                requestList.map((item, index) => (
+                            {requestList.length>0 ? 
+                                (requestList
+                                .filter(item => item.status === "Accepted")
+                                .map((item, index) => (
                                     <RequestItem 
-                                        key={item._id || index} // Use unique key, fallback to index
+                                        key={item._id || index} 
                                         recipientName={item.fullName || 'Unknown'}
                                         hospitalName={item.hospital?.name || 'Unknown'}
                                         date={item.createdAt ? format(new Date(item.createdAt), 'dd/MM/yyyy') : 'N/A'}
-                                        status={item.status || 'Pending'}
+                                        status={item.status}
                                         recipientId={item.recipient._id}
+                                        donor_id={id}
+                                        donorStatus={donorStatus}
+                                        setDonorStatus={setDonorStatus}
+                                    />
+                                )))
+                                : <p className='text-red-600 font-normal font-serif '>No Requests as of now</p>
+                            }
+
+                            {
+                                requestList
+                                .filter(item => item.status !== "Accepted")
+                                .map((item, index) => (
+                                    <RequestItem 
+                                        key={item._id || index} 
+                                        recipientName={item.fullName || 'Unknown'}
+                                        hospitalName={item.hospital?.name || 'Unknown'}
+                                        date={item.createdAt ? format(new Date(item.createdAt), 'dd/MM/yyyy') : 'N/A'}
+                                        status={item.status}
+                                        recipientId={item.recipient._id}
+                                        donor_id={id}
                                         donorStatus={donorStatus}
                                         setDonorStatus={setDonorStatus}
                                     />
                                 ))
-                            ) : (
-                                <p>No requests available</p>
-                            )}
+                            }
                         </div>
                     </div>
                 </div>
@@ -86,7 +114,16 @@ function DonorCard({ status = "available", fullName, age, bloodType, organType, 
     )
 }
 
-function RequestItem({ recipientName, hospitalName, date, status, donorStatus, setDonorStatus, recipient_id }) {
+function RequestItem({ 
+    recipientName, 
+    hospitalName, 
+    date, 
+    status, 
+    donorStatus, 
+    setDonorStatus, 
+    recipient_id, 
+    donor_id 
+}) {
     
     const [requestStatus, setRequestStatus] = useState(status);
     let statusColor = requestStatus === "Pending" ? "text-yellow-600" : "text-red-600";
@@ -96,6 +133,8 @@ function RequestItem({ recipientName, hospitalName, date, status, donorStatus, s
         try {
             axios.patch(`/api/v1/hospitals/donor/accept-request/${recipient_id}`,{
                 status:"Accepted",
+                donor_id,
+                recipient_id
             })
             .then((response)=>{
                 if(response.status){
@@ -111,7 +150,7 @@ function RequestItem({ recipientName, hospitalName, date, status, donorStatus, s
 
     const handleReject = () => {
         try {
-            axios.patch(`/api/v1/hospitals/donor/reeject-request/${id}`,{
+            axios.patch(`/api/v1/hospitals/donor/reject-request/${id}`,{
                 status:"Rejected",
             })
             .then((response)=>{
@@ -136,7 +175,8 @@ function RequestItem({ recipientName, hospitalName, date, status, donorStatus, s
                     <p className="text-sm text-gray-600">{date}</p>
                     <p className={`text-sm font-medium ${statusColor}`}>{status}</p>
                 </div>
-                {requestStatus=="Pending" && 
+                {
+                    requestStatus=="Pending" && 
                     <div className="flex gap-2">
                         <button
                             onClick={handleAccept}
@@ -159,7 +199,8 @@ function RequestItem({ recipientName, hospitalName, date, status, donorStatus, s
     )
 }
 
-function CheckButton({ id }) {
+function CheckButton({ id, donorList, setDonorList }) {
+
     return (
         <div className="flex flex-col items-end">
             <div className="flex items-center gap-2">
@@ -173,12 +214,36 @@ function CheckButton({ id }) {
                 >
                     Request History
                 </button>
+                <button 
+                    type="button"
+                    className="bg-red-600 hover:bg-red-700 transition-colors w-8 h-8 flex justify-center items-center rounded-md text-white"
+                >
+                    <Trash2 size={20} />
+                </button>
             </NavLink>
         </div>
     )
 }
 
-function CrossButton({ id, isOpen, setIsOpen }) {
+function CrossButton({ id, isOpen, setIsOpen, donorList, setDonorList  }) {
+
+    const deleteDonor = async()=>{
+        try {
+            await axios.delete(`/api/v1/hospitals/donor/delete/${id}`)
+            .then((response)=>{
+                if(response.status){
+                    const newDonorList = donorList.filter((item)=> item._id!=id)
+                    setDonorList(newDonorList);
+                }
+            })
+            .catch((error)=>{
+                console.log("Error while deleting the donor, ERROR: ", error);
+            })
+        } catch (error) {
+            console.log("Error while deleting the donor, ERROR: ", error);
+        }
+    }
+
     return (
         <div className="flex flex-col items-end">
             <div className="flex items-center gap-2">
@@ -197,6 +262,7 @@ function CrossButton({ id, isOpen, setIsOpen }) {
                 <button 
                     type="button"
                     className="bg-red-600 hover:bg-red-700 transition-colors w-8 h-8 flex justify-center items-center rounded-md text-white"
+                    onClick={deleteDonor}
                 >
                     <Trash2 size={20} />
                 </button>

@@ -7,16 +7,14 @@ function Donors() {
     const [donorList, setDonorList] = useState([]);
 
     useEffect(() => {
-        const fetchDonors = async () => {
+        (async () => {
             try {
                 const response = await axios.get('/api/v1/hospitals/donor/donors');
-                setDonorList(response.data.data);
+                if(response.status) setDonorList(response.data.data);
             } catch (error) {
                 console.log('Donor data fetching failed, ERROR: ', error);
             }
-        };
-
-        fetchDonors();
+        })();
     }, []);
 
     return (
@@ -32,6 +30,7 @@ function Donors() {
                         bloodType={item.bloodType}
                         organType={item.organType}
                         id={item._id}
+                        setDonorList
                     />
                 ))
             ) : (

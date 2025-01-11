@@ -12,6 +12,7 @@ import Admin from './components/Admin/Admin.jsx'
 import AuthLayout from './AuthLayout.jsx'
 import Container from './Container.jsx'
 import Donors from './components/Donors/Donors.jsx'
+import Recipients from './components/Recipients/Recipients.jsx'
 
 const router = createBrowserRouter([  
   {
@@ -51,6 +52,14 @@ const router = createBrowserRouter([
         element: (
           <AuthLayout authentication={true} request={"/donors"}>
             <Donors />
+          </AuthLayout>
+        )
+      },
+      {
+        path: "/recipients",
+        element: (
+          <AuthLayout authentication={true} request={"/donors"}>
+            <Recipients />
           </AuthLayout>
         )
       }

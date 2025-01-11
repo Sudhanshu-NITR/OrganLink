@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { acceptRequest, addDonor, donorList, getRequests } from "../controllers/donor.controller.js";
+import { acceptRequest, addDonor, deleteDonor, donorList, getRequests } from "../controllers/donor.controller.js";
 import {verifyJWT} from "../middlewares/auth.middleware.js"
 
 const router = Router();
@@ -10,5 +10,6 @@ router.route("/add-donor").post(addDonor);
 router.route("/get-requests/:donor_id").get(getRequests);
 router.route("/accept-request").patch(acceptRequest);
 router.route("/donors").get(donorList);
+router.route("/delete/:id").delete(deleteDonor)
 
 export default router;

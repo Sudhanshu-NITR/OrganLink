@@ -5,14 +5,12 @@ import { login, logout } from "./store/authSlice";
 import axios from "axios";
 import Sidebar, { SidebarItem } from "./components/Sidebar/Sidebar.jsx";
 import {
-  LifeBuoy,
-  Receipt,
-  Boxes,
-  Package,
-  UserCircle,
-  BarChart3,
+  Users,
+  HeartHandshake,
+  History,  
   LayoutDashboard,
   Settings,
+  HelpCircle,
 } from "lucide-react";
 
 function Container({ children }) {
@@ -47,14 +45,12 @@ function Container({ children }) {
             {authStatus && (
             <Sidebar>
                 <SidebarItem icon={<LayoutDashboard size={20} />} text="Dashboard" link="/admin"/>
-                <SidebarItem icon={<BarChart3 size={20} />} text="Statistics" />
-                <SidebarItem icon={<UserCircle size={20} />} text="Donors" link="/donors"/>
-                <SidebarItem icon={<Boxes size={20} />} text="Inventory" />
-                <SidebarItem icon={<Package size={20} />} text="Orders" alert />
-                <SidebarItem icon={<Receipt size={20} />} text="Billings" />
+                <SidebarItem icon={<HeartHandshake size={20} />} text="Donors" link="/donors"/>
+                <SidebarItem icon={<Users size={20} />} text="Recipient" link="/recipients"/>
+                <SidebarItem icon={<History size={20} />} text="Match History" />
                 <hr className="my-3" />
                 <SidebarItem icon={<Settings size={20} />} text="Settings" />
-                <SidebarItem icon={<LifeBuoy size={20} />} text="Help" />
+                <SidebarItem icon={<HelpCircle size={20} />} text="Help" />
             </Sidebar>
             )}
         </div>

@@ -89,7 +89,14 @@ const getRequests = asyncHandler(async(req, res)=>{
 });
 
 const acceptRequest = asyncHandler(async(req, res)=>{
-    const {donor, recipient} = req.params;
+    const {donor_id, recipient_id} = req.body;
+
+    if(!donor_id || !recipient_id){
+        throw new ApiError(400, "Error while retrieving donor & reciever data");
+    }
+
+    const donor = await Donor.findById(donor_id)
+    const recipient = await Recipient.findById(recipient_id)
 
     if(!donor || !recipient){
         throw new ApiError(400, "Error while retrieving donor & reciever data");
@@ -98,6 +105,27 @@ const acceptRequest = asyncHandler(async(req, res)=>{
     if(donor.status=='unavailable'){
         throw new ApiError(409, "organ already donated");
     }
+
+    const updatedDonor = await Donor.findByIdAndUpdate(
+        donor_id,
+        {
+            $set: {
+                status: "unavailable"
+            }
+        },
+        {new: true}
+    ).select("-password");
+
+    const updatedRecipient = await Recipient.findByIdAndUpdate(
+        recipient_id,
+        {
+            $set: {
+                status: "matched"
+            }
+        },
+        {new: true}
+    ).select("-password");
+    
 
     const match = await Match.create({
         donor: donor._id,
@@ -115,23 +143,56 @@ const acceptRequest = asyncHandler(async(req, res)=>{
         }
     )
 
-    await Recipient.findByIdAndUpdate(
-        recipient._id,
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            {
+                match,
+                updatedDonor,
+                updatedRecipient
+            },
+            "Match created successfully"
+        )
+    );
+});
+
+const rejectRequest = asyncHandler(async(req, res)=>{
+    const {donor_id, recipient_id} = req.body;
+
+    if(!donor_id || recipient_id){  
+        throw new ApiError(400, "donor id and recipient id was not passed");
+    }
+
+    const donor = await Donor.findByIdAndUpdate(
+        { 
+            _id: donor_id, // first this
+            "requests.recipient": recipient_id // then this
+        },
         {
-            status: "matched"
-        }
-    )
+            $set: {
+                "requests.$.status": "Accepted",  // $ matches the array index found in the query
+            }
+        },
+        { new: true }
+    ).select("-password")
+
+    if(!donor){
+        throw new ApiError(409, "Error while updating donor reject request!!")
+    }
 
     return res
     .status(200)
     .json(
         new ApiResponse(
             200,
-            match,
-            "Match created successfully"
+            donor,
+            "Request rejected successfully!!"
         )
-    );
-});
+    )
+
+})
 
 const donorList = asyncHandler(async(req, res)=>{
     const hospital = req.hospital;
@@ -177,4 +238,30 @@ const donorList = asyncHandler(async(req, res)=>{
     );
 });
 
-export { addDonor, acceptRequest, getRequests, donorList };
+const deleteDonor = asyncHandler(async(req, res)=>{
+    const {id} = req.params;
+
+    if(!id){
+        throw new ApiError(400, "Donor id was not passed!!");
+    }
+
+    const donor = Donor.findByIdAndDelete(id, (error, docs)=>{
+        if(error){
+            throw new ApiError(500, "Something went wrong while deleting the donor")
+        }
+        else{
+            return res
+            .status(200)
+            .json(
+                new ApiResponse(
+                    200,
+                    docs,
+                    "Donor deleted successfully!!"
+                )
+            )
+        }
+    });
+
+});
+
+export { addDonor, acceptRequest, getRequests, donorList, rejectRequest, deleteDonor };
