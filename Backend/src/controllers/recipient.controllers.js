@@ -138,8 +138,56 @@ const sendRequest = asyncHandler(async(req, res)=>{
     )
 });
 
+const searchDonors = asyncHandler(async(req, res)=>{
+    const {organType, bloodGroup, age} = req.body;
+
+    if(!organType || !bloodGroup || !age){
+        throw new ApiError(409, "Search Parameters wwere not passed!!");
+    }
+
+    const searchResults = await Donor.aggregate([
+        {
+            $match: {
+                organType: organType,
+                status: "unmatched"
+            }
+        },
+        {
+            $addFields: {
+                isBloodGroupMatch: {
+                    $eq: ["$bloodGroup", bloodGroup] //Boolean value
+                },
+                ageDifference: {
+                    $abs: { $subtract: ["$age", parseInt(age)] }
+                }
+            }
+        },
+        {
+            $sort: { 
+                isBloodGroupMatch: -1,   //true comes first
+                ageDifference: 1   //smaller difference first
+            }
+        }
+    ]);
+
+    if(!searchResults){
+        throw new ApiError(500, "Error while aggregating search results!!")
+    }
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            searchResults,
+            "Search results successfully fetched!!"
+        )
+    )
+})
+
 export {
     addRecipient,
     findMatches,
-    sendRequest
+    sendRequest,
+    searchDonors
 }

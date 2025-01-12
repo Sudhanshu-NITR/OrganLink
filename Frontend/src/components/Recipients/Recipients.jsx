@@ -1,26 +1,34 @@
 import React, { useEffect, useState } from 'react';
 import { Search, UserPlus, Trash2 } from 'lucide-react';
 import RecipientCard from './RecipientCard.jsx';
+import RecipientForm from './RecipientForm.jsx';
+import axios from 'axios';
 
 const Recipient = () => {
-    const [searchQuery, setSearchQuery] = useState('');
+    const [searchParams, setSearchParams] = useState({
+        organType: '',
+        bloodGroup: '',
+        age: ''
+    });
     const [searchResults, setSearchResults] = useState([]);
-    const [recipientList, setRecipientList] = useState([{
-        name: 'Sarah Smith',
-        age: 42,
-        bloodGroup: 'A+',
-        organType: 'Kidney',
-        status: 'waiting',
-        urgency: 'High'
-      },
-      {
-        name: 'Mike Johnson',
-        age: 28,
-        bloodGroup: 'O-',
-        organType: 'Kidney',
-        status: 'waiting',
-        urgency: 'Medium'
-      }]);
+    const [recipientList, setRecipientList] = useState([
+        {
+            name: 'Sarah Smith',
+            age: 42,
+            bloodGroup: 'A+',
+            organType: 'Kidney',
+            status: 'waiting',
+            urgency: 'High'
+        },
+        {
+            name: 'Mike Johnson',
+            age: 28,
+            bloodGroup: 'O-',
+            organType: 'Kidney',
+            status: 'waiting',
+            urgency: 'Medium'
+        }
+    ]);
 
     useEffect(() => {
         (async () => {
@@ -33,57 +41,125 @@ const Recipient = () => {
         })();
     }, []);
 
-    const handleSearch = (query) => {
-        setSearchQuery(query);
-        const results = recipients.filter(recipient =>
-            recipient.name.toLowerCase().includes(query.toLowerCase()) ||
-            recipient.bloodGroup.toLowerCase().includes(query.toLowerCase()) ||
-            recipient.organType.toLowerCase().includes(query.toLowerCase())
-        );
-        setSearchResults(results);
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setSearchParams(prev => ({
+            ...prev,
+            [name]: value
+        }));
     };
 
-    return (
-        <div className="p-6 max-w-6xl mx-auto">
+    const onSearch = (searchParams) =>{
+        try {
+            axios.get("/api/v1/hospitals/recipient/search-donors", {
+                organType: searchParams.organType,
+                bloodGroup: searchParams.bloodGroup,
+                age: searchParams.age
+            })
+            .then((response)=>{
+                if(response.status){
+                    setSearchResults(response.data);
+                }
+            })
+            .catch((error)=>{
+                console.log("Error searching for a Donor!! ERROR: ", error);
+            })
+        } catch(error){
+            console.log("Error searching for a Donor!! ERROR: ", error);
+        }
+    }
 
-            <div className="relative mb-6">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                <input
-                type="text"
-                placeholder="Search recipients by name, blood group, or organ type..."
-                className="w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={searchQuery}
-                onChange={(e) => handleSearch(e.target.value)}
-                />
-            </div>
-            
-            <div className="mb-6">
-                <button className="flex items-center space-x-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors">
-                <UserPlus className="w-5 h-5" />
-                <span>Add Recipient</span>
+    return (
+        <div className="w-full h-full flex flex-col items-center justify-center p-16 space-y-4 bg-[#fff4ec]">
+            <div className="flex flex-col space-y-4 min-w-[50rem] items-center">
+                <div className="grid grid-cols-3 gap-4">
+                    <div className="flex flex-col">
+                        <label htmlFor="organType" className="mb-2 text-sm font-medium text-gray-700">
+                            Organ Type
+                        </label>
+                        <select
+                            id="organType"
+                            name="organType"
+                            value={searchParams.organType}
+                            onChange={handleInputChange}
+                            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                            <option value="">Select Organ Type</option>
+                            <option value="Kidney">Kidney</option>
+                            <option value="Liver">Liver</option>
+                            <option value="Heart">Heart</option>
+                            <option value="Lungs">Lungs</option>
+                        </select>
+                    </div>
+
+                    <div className="flex flex-col">
+                        <label htmlFor="bloodGroup" className="mb-2 text-sm font-medium text-gray-700">
+                            Blood Group
+                        </label>
+                        <select
+                            id="bloodGroup"
+                            name="bloodGroup"
+                            value={searchParams.bloodGroup}
+                            onChange={handleInputChange}
+                            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                            <option value="">Select Blood Group</option>
+                            <option value="A+">A+</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B-">B-</option>
+                            <option value="AB+">AB+</option>
+                            <option value="AB-">AB-</option>
+                            <option value="O+">O+</option>
+                            <option value="O-">O-</option>
+                        </select>
+                    </div>
+
+                    <div className="flex flex-col">
+                        <label htmlFor="age" className="mb-2 text-sm font-medium text-gray-700">
+                            Age
+                        </label>
+                        <input
+                            type="number"
+                            id="age"
+                            name="age"
+                            value={searchParams.age}
+                            onChange={handleInputChange}
+                            placeholder="Enter age"
+                            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                    </div>
+                </div>
+
+                <button 
+                    className="w-[60%] bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition-colors"
+                    onClick={() => onSearch(searchParams)}
+                >
+                    Search Donors
                 </button>
             </div>
-
-            {searchQuery && searchResults.length > 0 && (
+            
+            {searchResults.length > 0 && (
                 <div className="mb-8">
                     <h2 className="text-lg font-semibold mb-4">Search Results</h2>
                     <div className="space-y-4">
                         {searchResults.map((recipient, index) => (
-                        <RecipientCard key={`search-${index}`} recipient={recipient} />
+                            <RecipientCard key={`search-${index}`} recipient={recipient} />
                         ))}
                     </div>
                 </div>
             )}
 
-            <div>
-                <h2 className="text-lg font-semibold mb-4">All Recipients</h2>
-                <div className="space-y-4">
-                    {
-                        recipientList.map((recipient, index) => (
-                            <RecipientCard key={index} recipient={recipient} />
-                        ))
-                    }
-                </div>
+            <div className='w-full h-full flex flex-col items-center justify-center p-16 space-y-4 bg-[#fff4ec]'>
+                <RecipientForm />
+                <h2 className="text-lg font-semibold mb-4">Request History</h2>
+                {recipientList.length > 0 ? (
+                    recipientList.map((recipient, index) => (
+                        <RecipientCard key={index} recipient={recipient}/>
+                    ))
+                ) : (
+                    <p>No Recipients!!</p>
+                )}
             </div>
         </div>
     );

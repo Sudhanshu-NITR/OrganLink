@@ -2,7 +2,7 @@ import React from 'react';
 import {Trash2 } from 'lucide-react';
 
 const RecipientCard = ({ recipient }) => (
-    <div className="bg-gray-50 rounded-xl p-6 shadow-sm">
+    <div className="bg-gray-50 rounded-xl p-6 min-w-[50rem] shadow-sm">
         <div className="flex justify-between items-start">
             <div className="space-y-2">
             <h3 className="text-xl font-semibold">{recipient.name}</h3>

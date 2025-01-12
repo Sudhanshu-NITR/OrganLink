@@ -1,66 +1,128 @@
-import axios from 'axios';
-import React, { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useDispatch } from 'react-redux';
-import {login, logout} from '../../store/authSlice.js'
+import React from 'react';
+import { Building2, Users, HandshakeIcon } from 'lucide-react';
 
-function Admin() {
-    const navigate = useNavigate();
-    let userData = null;
-    const dispatch = useDispatch();
-    useEffect(()=>{
-        axios.get("/api/v1/hospitals/current-hospital")
-        .then((response)=>{
-            if(response.status){
-                userData = response.data; 
-                dispatch(login({userData}));
-            }
-            else{
-                dispatch(logout());
-                navigate("/login");
-            }
-        })
-        .catch((error)=>{
-            console.log("Error logging in, ERROR: ", error);
-            dispatch(logout());
-            navigate("/login");
-        });
+const StatCard = ({ icon: Icon, title, count, iconBackground }) => (
+  <div className="bg-white rounded-lg p-6 flex items-center space-x-4 shadow-sm">
+    <div className={`${iconBackground} p-3 rounded-full`}>
+      <Icon className="w-6 h-6 text-white" />
+    </div>
+    <div>
+      <p className="text-gray-600 text-sm">{title}</p>
+      <p className="text-2xl font-semibold mt-1">{count}</p>
+    </div>
+  </div>
+);
 
-    }, [navigate])
+const Dashboard = () => {
+  // Sample data - replace with actual data
+  const stats = {
+    donations: 156,
+    recipients: 243,
+    matches: 89
+  };
 
-    return (
-        <>
-            <div className='bg-[#fff4ec] min-w-screen min-h-screen flex flex-wrap justify-evenly'>
-                <div className='bg-white rounded-lg shadow-lg w-[80%] mt-10 m-5 p-16'>
-                    <div className='w-full flex flex-wrap'>
-                        <div className='w-32 h-32 bg-white shadow-xl rounded-full flex justify-center items-center'>
-                            <img src="../hospital.png" className='w-full rounded-full' />
-                        </div>
-                        <div className='flex space-x-16'>
-                            <div className='flex-col space-y-4 flex-wrap max-w-32 text-center'>
-                                <div className='w-32 h-32 bg-[#A4D3A2] rounded-full text-[#333333]  flex justify-center items-center shadow-xl text-[2rem]'>
-                                    
-                                </div>
-                                <h3 className='text-xl font-serif'>Donation Count</h3>
-                            </div>
-                            <div className='flex-col space-y-4 flex-wrap max-w-32 text-center'>
-                                <div className='w-32 h-32 bg-[#A4D3A2] rounded-full text-[#333333]  flex justify-center items-center shadow-xl text-[2rem]'>
+  return (
+    <div className="p-6 max-w-7xl mx-auto">
+      <div className="mb-8">
+        <h1 className="text-2xl font-semibold text-gray-800">Dashboard</h1>
+        <p className="text-gray-600 mt-1">Overview of organ donation statistics</p>
+      </div>
 
-                                </div>
-                                <h3 className='text-xl font-serif'>Reciever Count</h3>
-                            </div>
-                            <div className='flex-col space-y-4 flex-wrap max-w-32 text-center'>
-                                <div className='w-32 h-32 bg-[#A4D3A2] rounded-full text-[#333333]  flex justify-center items-center shadow-xl text-[2rem]'>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <StatCard
+          icon={Building2}
+          title="Donation Count"
+          count={stats.donations}
+          iconBackground="bg-blue-500"
+        />
+        <StatCard
+          icon={Users}
+          title="Receiver Count"
+          count={stats.recipients}
+          iconBackground="bg-green-500"
+        />
+        <StatCard
+          icon={HandshakeIcon}
+          title="Match Count"
+          count={stats.matches}
+          iconBackground="bg-orange-500"
+        />
+      </div>
 
-                                </div>
-                                <h3 className='text-xl font-serif'>Match Count</h3>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </>
-    )
-}
+      {/* Recent Activity Section */}
+      <div className="mt-8">
+        <h2 className="text-xl font-semibold text-gray-800 mb-4">Recent Activity</h2>
+        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+          <table className="min-w-full">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Date
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Activity
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Status
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              <tr>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  Jan 12, 2025
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  New donor registration
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                    Completed
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  Jan 11, 2025
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  Successful match found
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                    In Progress
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
 
-export default Admin
+      {/* Quick Actions Section */}
+      <div className="mt-8">
+        <h2 className="text-xl font-semibold text-gray-800 mb-4">Quick Actions</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <button className="p-4 bg-white rounded-lg shadow-sm hover:bg-gray-50 transition-colors text-left">
+            <h3 className="font-medium text-gray-900">Add New Donor</h3>
+            <p className="text-sm text-gray-500 mt-1">Register a new organ donor</p>
+          </button>
+          <button className="p-4 bg-white rounded-lg shadow-sm hover:bg-gray-50 transition-colors text-left">
+            <h3 className="font-medium text-gray-900">Add Recipient</h3>
+            <p className="text-sm text-gray-500 mt-1">Register a new recipient</p>
+          </button>
+          <button className="p-4 bg-white rounded-lg shadow-sm hover:bg-gray-50 transition-colors text-left">
+            <h3 className="font-medium text-gray-900">View Matches</h3>
+            <p className="text-sm text-gray-500 mt-1">Check current matches</p>
+          </button>
+          <button className="p-4 bg-white rounded-lg shadow-sm hover:bg-gray-50 transition-colors text-left">
+            <h3 className="font-medium text-gray-900">Generate Report</h3>
+            <p className="text-sm text-gray-500 mt-1">Create activity report</p>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Dashboard;
