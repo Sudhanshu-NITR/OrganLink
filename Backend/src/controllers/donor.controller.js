@@ -18,7 +18,7 @@ const addDonor = asyncHandler(async(req, res)=>{
     }
 
     const existingRequest = await Donor.findOne({
-        $or: [{fullName, organType}]
+        $and: [{fullName, organType}]
     });
 
     if(existingRequest){

@@ -10,7 +10,7 @@ function Donors() {
         (async () => {
             try {
                 const response = await axios.get('/api/v1/hospitals/donor/donors');
-                if(response.status) setDonorList(response.data.data);
+                if(response.data.success) setDonorList(response.data.data);
             } catch (error) {
                 console.log('Donor data fetching failed, ERROR: ', error);
             }

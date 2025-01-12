@@ -3,6 +3,7 @@ import { Search, UserPlus, Trash2 } from 'lucide-react';
 import RecipientCard from './RecipientCard.jsx';
 import RecipientForm from './RecipientForm.jsx';
 import axios from 'axios';
+import SearchResultCard from './SearchResultCard.jsx';
 
 const Recipient = () => {
     const [searchParams, setSearchParams] = useState({
@@ -30,6 +31,15 @@ const Recipient = () => {
         }
     ]);
 
+    const donor={
+        name: "John Smith",
+        hospitalName: "Apollo Hospitals",
+        age: 45,
+        bloodGroup: "O+",
+        organType: "Kidney",
+        status: "Available"
+    }
+
     useEffect(() => {
         (async () => {
             try {
@@ -49,16 +59,18 @@ const Recipient = () => {
         }));
     };
 
-    const onSearch = (searchParams) =>{
+    const onSearch = async(searchParams) =>{
         try {
             axios.get("/api/v1/hospitals/recipient/search-donors", {
-                organType: searchParams.organType,
-                bloodGroup: searchParams.bloodGroup,
-                age: searchParams.age
+                params: {
+                    organType: searchParams.organType,
+                    bloodGroup: searchParams.bloodGroup,
+                    age: searchParams.age,
+                },
             })
             .then((response)=>{
-                if(response.status){
-                    setSearchResults(response.data);
+                if(response.data.success){
+                    setSearchResults(response.data.data);
                 }
             })
             .catch((error)=>{
@@ -72,6 +84,7 @@ const Recipient = () => {
     return (
         <div className="w-full h-full flex flex-col items-center justify-center p-16 space-y-4 bg-[#fff4ec]">
             <div className="flex flex-col space-y-4 min-w-[50rem] items-center">
+                    {/* <h2 className='text-2xl font-serif font-medium'>Search Donors</h2> */}
                 <div className="grid grid-cols-3 gap-4">
                     <div className="flex flex-col">
                         <label htmlFor="organType" className="mb-2 text-sm font-medium text-gray-700">
@@ -89,6 +102,7 @@ const Recipient = () => {
                             <option value="Liver">Liver</option>
                             <option value="Heart">Heart</option>
                             <option value="Lungs">Lungs</option>
+                            <option value="Lungs">Eyes</option>
                         </select>
                     </div>
 
@@ -139,19 +153,22 @@ const Recipient = () => {
                 </button>
             </div>
             
+            <SearchResultCard 
+                donor={donor}
+            />
             {searchResults.length > 0 && (
                 <div className="mb-8">
                     <h2 className="text-lg font-semibold mb-4">Search Results</h2>
                     <div className="space-y-4">
-                        {searchResults.map((recipient, index) => (
-                            <RecipientCard key={`search-${index}`} recipient={recipient} />
+                        {searchResults.map((donor, index) => (
+                            <RecipientCard key={donor._id} donor={donor}/>
                         ))}
                     </div>
                 </div>
             )}
 
             <div className='w-full h-full flex flex-col items-center justify-center p-16 space-y-4 bg-[#fff4ec]'>
-                <RecipientForm />
+                <hr class="border-t-1 w-[60%] border-gray-200" />
                 <h2 className="text-lg font-semibold mb-4">Request History</h2>
                 {recipientList.length > 0 ? (
                     recipientList.map((recipient, index) => (

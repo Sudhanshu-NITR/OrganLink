@@ -22,7 +22,7 @@ function DonorCard({
             try {
                 await axios.get(`/api/v1/hospitals/donor/get-requests/${id}`)
                 .then((response)=>{
-                    if(response.status){
+                    if(response.data.success){
                         setRequestList(response.data.data);
                     }
                 })
@@ -137,7 +137,7 @@ function RequestItem({
                 recipient_id
             })
             .then((response)=>{
-                if(response.status){
+                if(response.data.success){
                     console.log("Request accepted");
                     setRequestStatus("Accepted");
                     setDonorStatus("unavailable");
@@ -154,7 +154,7 @@ function RequestItem({
                 status:"Rejected",
             })
             .then((response)=>{
-                if(response.status){
+                if(response.data.success){
                     console.log("Request rejected");
                     setRequestStatus("Rejected");
                 }

@@ -38,6 +38,11 @@ const recipientSchema = new Schema(
             enum: ['matched', 'unmatched'],
             default: 'unmatched',
         },
+        donor: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Donor',
+            required: true
+        }
     },
     {timestamps: true}
 );
