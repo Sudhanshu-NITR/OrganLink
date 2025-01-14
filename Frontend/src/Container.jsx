@@ -37,21 +37,21 @@ function Container({ children }) {
     };
 
     checkAuth();
-  }, [dispatch, navigate]);
+  }, [navigate]);
 
   return (
     <div className="w-full h-full flex">
         <div className="fixed z-20">
             {authStatus && (
-            <Sidebar>
+              <Sidebar>
                 <SidebarItem icon={<LayoutDashboard size={20} />} text="Dashboard" link="/admin"/>
                 <SidebarItem icon={<HeartHandshake size={20} />} text="Donors" link="/donors"/>
                 <SidebarItem icon={<Users size={20} />} text="Recipient" link="/recipients"/>
-                <SidebarItem icon={<History size={20} />} text="Match History" />
+                <SidebarItem icon={<History size={20} />} text="Match History" link={"/match-history"}/>
                 <hr className="my-3" />
                 <SidebarItem icon={<Settings size={20} />} text="Settings" />
                 <SidebarItem icon={<HelpCircle size={20} />} text="Help" />
-            </Sidebar>
+              </Sidebar>
             )}
         </div>
         <div className={`z-0 flex-1 overflow-auto ${authStatus? "ml-[4.29rem]" : "ml-0"}`}>

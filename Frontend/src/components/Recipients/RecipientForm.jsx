@@ -6,7 +6,7 @@ import axios from 'axios';
 const RecipientForm = ({isFormOpen, setIsFormOpen, donor_id}) => {
   const {register, handleSubmit, reset} = useForm({donor_id});
 
-  const addDonor = (data) => {
+  const addRecipient = (data) => {
     try {
       axios.post('/api/v1/hospitals/donor/send-request', data)
       .then((response)=>{

@@ -16,7 +16,8 @@ const addDonor = asyncHandler(async(req, res)=>{
     ){
         throw new ApiError(400, "All fields are required");
     }
-
+    console.log(hospital);
+    
     const existingRequest = await Donor.findOne({
         $and: [{fullName, organType}]
     });

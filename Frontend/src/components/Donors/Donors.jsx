@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import DonorCard from './DonorCard';
 import axios from 'axios';
+import { useForm } from 'react-hook-form';
 import DonorForm from './DonorForm';
 
 function Donors() {
     const [donorList, setDonorList] = useState([]);
+    const {register, handleSubmit, reset} = useForm();
 
     useEffect(() => {
         (async () => {
@@ -15,11 +17,11 @@ function Donors() {
                 console.log('Donor data fetching failed, ERROR: ', error);
             }
         })();
-    }, []);
+    }, [handleSubmit]);
 
     return (
         <div className='w-full h-full flex flex-col items-center justify-center p-16 space-y-4 bg-[#fff4ec]'>
-            <DonorForm />
+            <DonorForm register={register} handleSubmit={handleSubmit} reset={reset}/>
             {donorList.length > 0 ? (
                 donorList.map((item, index) => (
                     <DonorCard

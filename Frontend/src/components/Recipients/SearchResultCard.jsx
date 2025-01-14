@@ -30,11 +30,11 @@ const SearchResultCard = ({ donor }) => {
             <div className="p-6 min-w-[50rem]">
                 <div className="flex justify-between items-start">
                     <div className="space-y-2">
-                        <h3 className="text-xl font-semibold text-gray-800">{donor.name}</h3>
-                        <p className="text-gray-600">Hospital: {donor.hospitalName}</p>
+                        <h3 className="text-xl font-semibold text-gray-800">{donor.fullName}</h3>
+                        <p className="text-gray-600">Hospital: {donor.hospital.name}</p>
                         <div className="flex space-x-4 text-gray-600">
                             <p>Age: {donor.age}</p>
-                            <p>Blood Group: {donor.bloodGroup}</p>
+                            <p>Blood Group: {donor.bloodType}</p>
                             <p>Organ Type: {donor.organType}</p>
                         </div>
                     </div>

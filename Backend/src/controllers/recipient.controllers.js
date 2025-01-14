@@ -3,29 +3,22 @@ import { Donor } from '../models/donor.models.js';
 import { ApiError } from '../utils/ApiError.js';
 import {asyncHandler} from '../utils/asyncHandler.js'
 import { ApiResponse } from '../utils/ApiResponse.js';
-import { Hospital } from '../models/hospital.models.js';
 
-const addRecipient = asyncHandler(async(req, res)=>{
-    const {hospital_id} = req.params;
-    let {fullName, age, bloodType, organNeeded, urgency} = req.body;
-
+const sendRequest = asyncHandler(async(req, res)=>{
+    const {fullName, age, bloodType, organNeeded, phone, email, donor_id} = req.body;
+    const hospital = req.hospital._id
     if(
-        [fullName, age, bloodType, organNeeded, urgency].some((field) => field?.trim() ==="")
+        [fullName, age, bloodType, organNeeded, phone, email, donor_id].some((field) => field?.trim() ==="")
     ){
         throw new ApiError(400, "All fields are required");
     }
-
-    const existingRequest = await Recipient.findOne({
-        $or: [{fullName, organNeeded}]
+    const existingRequest = await Donor.findOne({
+        $and: [{fullName, organNeeded}]
     });
 
     if(existingRequest){
-        throw new ApiError(409, "Request already exists");
+        throw new ApiError(409, "Requests already exists");
     }
-
-    const hospital = await Hospital.findById(hospital_id).select(
-        "email phone name address"
-    );
 
     const recipient = await Recipient.create({
         fullName, 
@@ -34,98 +27,23 @@ const addRecipient = asyncHandler(async(req, res)=>{
         organNeeded, 
         urgency,
         status: "unmatched",
-        hospital
-    });
-
-    if(!recipient){
-        throw new ApiError(500, "Something Went Wrong while preparing the request");
-    }
-
-    return res
-    .status(201)
-    .json(
-        new ApiResponse(
-            200, 
-            recipient, 
-            "Recipient request registered successfully"
-        )
-    )
-
-}); 
-
-const findMatches = asyncHandler(async(req, res)=>{
-    const {organNeeded, bloodType} = req.body;
+        hospital,
+        donor: donor_id
+    })
     
-    if(!organNeeded || !bloodType){
-        throw new ApiError(400, "Recipient information invalid");
-    }
-
-    const matches = await Donor.aggregate([
-        {
-            $match: { 
-                bloodType, 
-                organType: organNeeded, 
-                status: 'available' 
-            }
-        },
-        {
-            $lookup: {
-                from: 'hospitals', 
-                localField: 'hospital', 
-                foreignField: '_id', 
-                as: 'hospitalDetails' 
-            }
-        },
-        { 
-            $project: { 
-                name: 1, 
-                age: 1, 
-                organType: 1, 
-                bloodType: 1, 
-                hospitalDetails: { 
-                    name: 1, 
-                    location: 1 
-                } 
-            }
-        }
-    ]);
-
-    if(!matches){
-        return res
-        .status(200)
-        .json(
-            new ApiResponse(200, {}, "No matches found!")
-        );
-    }
-
-    return res
-    .status(200)
-    .json(
-        new ApiResponse(
-            200, 
-            matches, 
-            "match found"
-        )
-    );
-
-});
-
-const sendRequest = asyncHandler(async(req, res)=>{
-    const { donor } = req.body;
-
-    if(!donor){
-        throw new ApiError(400, "donor fetching uncesuccessfull");
-    }
-
     const request = await Donor.findByIdAndUpdate(
-        donor._id,
+        donor_id,
         {
             $push: {
-                requests: recipientId
+                requests: recipient._id
             }
         },
         { new: true }
     );
+
+    if(!recipient || !request){
+        throw new ApiError("Error generating request!!");
+    }
 
     return res
     .status(200)
@@ -139,17 +57,17 @@ const sendRequest = asyncHandler(async(req, res)=>{
 });
 
 const searchDonors = asyncHandler(async(req, res)=>{
-    const {organType, bloodGroup, age} = req.body;
-
+    const {organType, bloodGroup, age} = req.query;
+    
     if(!organType || !bloodGroup || !age){
-        throw new ApiError(409, "Search Parameters wwere not passed!!");
+        throw new ApiError(409, "Search Parameters were not passed!!");
     }
 
     const searchResults = await Donor.aggregate([
         {
             $match: {
                 organType: organType,
-                status: "unmatched"
+                status: "available"
             }
         },
         {
@@ -167,7 +85,16 @@ const searchDonors = asyncHandler(async(req, res)=>{
                 isBloodGroupMatch: -1,   //true comes first
                 ageDifference: 1   //smaller difference first
             }
+        },
+        {
+            $lookup:{
+                from: "hospitals",
+                localField: "hospital",
+                foreignField: "_id",
+                as: "hospital"
+            }
         }
+        
     ]);
 
     if(!searchResults){
@@ -185,9 +112,51 @@ const searchDonors = asyncHandler(async(req, res)=>{
     )
 })
 
+const recipientList = asyncHandler(async(req, res)=>{
+    const hospital = req.hospital;
+    
+    if(!hospital){
+        throw new ApiError(401, "User unauthorized");
+    }
+    const hospital_id = hospital._id;
+    
+
+    const recipients = await Recipient.aggregate([
+        {
+            $match: {
+                hospital: hospital_id,
+            },
+        },
+        {
+            $addFields: {
+                sortStatus: { $cond: [{ $eq: ["$status", "matched"] }, 1, 0] },
+            },
+        },
+        {
+            $sort: {
+                sortStatus: 1, 
+                createdAt: -1, 
+            },
+        },
+    ]);
+
+    if(!recipients){
+        throw new ApiError(409, "Error while collecting recipient data");
+    }
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200, 
+            recipients,
+            "recipient list fetched successfully"
+        )
+    );
+});
+
 export {
-    addRecipient,
-    findMatches,
     sendRequest,
-    searchDonors
+    searchDonors,
+    recipientList
 }

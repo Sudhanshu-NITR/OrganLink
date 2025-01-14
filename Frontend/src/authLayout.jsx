@@ -11,7 +11,7 @@ export default function Protected({children, request="/", authentication=true}){
     
     useEffect(()=>{
         if (authStatus === undefined) return;
-
+        
         if(authentication && authStatus!==authentication){
             navigate("/login");
         }
@@ -19,7 +19,8 @@ export default function Protected({children, request="/", authentication=true}){
             navigate(request.trim());
         }
         setLoader(false);
-    }, [authStatus, navigate, authentication, request]);
+    }, [navigate, request]);
+
 
     return loader? <h1>Loading...</h1> : <>{children}</>
 }

@@ -58,7 +58,7 @@ function DonorCard({
                     <div className="p-6">
                         <h4 className="font-semibold mb-2 ">Recent Requests</h4>
                         <div className="space-y-3">
-                            <RequestItem 
+                            {/* <RequestItem 
                                 recipientName="Jane Smith"
                                 hospitalName="Memorial Hospital"
                                 date="2025-01-07"
@@ -69,7 +69,7 @@ function DonorCard({
                                 hospitalName="General Hospital"
                                 date="2025-01-06"
                                 status="Pending"
-                            />
+                            /> */}
                             {requestList.length>0 ? 
                                 (requestList
                                 .filter(item => item.status === "Accepted")

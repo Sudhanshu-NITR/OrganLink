@@ -24,7 +24,7 @@ router.route("/change-password").post(verifyJWT, changeCurrentPassword);
 router.route("/current-hospital").get(verifyJWT, getCurrentHospital);
 router.route("/update-account").patch(verifyJWT, updateAccountDetails);
 router.route("/avatar").patch(verifyJWT, upload.single("avatar"), updateHospitalAvatar);
-router.route("/match-history").get(getMatchesHistory)
+router.route("/match-history").get(getMatchesHistory);
 
 import recipientRouter from "./recipient.routes.js";
 import donorRouter from "./donor.routes.js";

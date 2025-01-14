@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
 import { ChevronDown, ChevronUp, UserPlus } from 'lucide-react';
-import { useForm } from 'react-hook-form';
 import Input from '../Header/Input.jsx';
 import axios from 'axios';
 
-const DonorForm = () => {
+const DonorForm = ({register, handleSubmit, reset}) => {
   const [isOpen, setIsOpen] = useState(false);
-  const {register, handleSubmit, reset} = useForm();
 
   const addDonor = (data) => {
     try {

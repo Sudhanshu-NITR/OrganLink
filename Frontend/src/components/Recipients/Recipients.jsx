@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Search, UserPlus, Trash2 } from 'lucide-react';
 import RecipientCard from './RecipientCard.jsx';
-import RecipientForm from './RecipientForm.jsx';
 import axios from 'axios';
 import SearchResultCard from './SearchResultCard.jsx';
 
@@ -13,32 +11,32 @@ const Recipient = () => {
     });
     const [searchResults, setSearchResults] = useState([]);
     const [recipientList, setRecipientList] = useState([
-        {
-            name: 'Sarah Smith',
-            age: 42,
-            bloodGroup: 'A+',
-            organType: 'Kidney',
-            status: 'waiting',
-            urgency: 'High'
-        },
-        {
-            name: 'Mike Johnson',
-            age: 28,
-            bloodGroup: 'O-',
-            organType: 'Kidney',
-            status: 'waiting',
-            urgency: 'Medium'
-        }
+        // {
+        //     name: 'Sarah Smith',
+        //     age: 42,
+        //     bloodGroup: 'A+',
+        //     organType: 'Kidney',
+        //     status: 'waiting',
+        //     urgency: 'High'
+        // },
+        // {
+        //     name: 'Mike Johnson',
+        //     age: 28,
+        //     bloodGroup: 'O-',
+        //     organType: 'Kidney',
+        //     status: 'waiting',
+        //     urgency: 'Medium'
+        // }
     ]);
 
-    const donor={
-        name: "John Smith",
-        hospitalName: "Apollo Hospitals",
-        age: 45,
-        bloodGroup: "O+",
-        organType: "Kidney",
-        status: "Available"
-    }
+    // const donor={
+    //     name: "John Smith",
+    //     hospitalName: "Apollo Hospitals",
+    //     age: 45,
+    //     bloodGroup: "O+",
+    //     organType: "Kidney",
+    //     status: "Available"
+    // }
 
     useEffect(() => {
         (async () => {
@@ -69,6 +67,8 @@ const Recipient = () => {
                 },
             })
             .then((response)=>{
+                console.log(response.data.data);
+                
                 if(response.data.success){
                     setSearchResults(response.data.data);
                 }
@@ -152,16 +152,22 @@ const Recipient = () => {
                     Search Donors
                 </button>
             </div>
-            
-            <SearchResultCard 
-                donor={donor}
-            />
+            {/* // TODO: 
+            {
+                searchResults.length>0 && 
+                searchResults.map((donor, index)=>{
+                    
+                })
+            } */}
             {searchResults.length > 0 && (
                 <div className="mb-8">
                     <h2 className="text-lg font-semibold mb-4">Search Results</h2>
                     <div className="space-y-4">
                         {searchResults.map((donor, index) => (
-                            <RecipientCard key={donor._id} donor={donor}/>
+                            <SearchResultCard 
+                                donor={donor}
+                                key={donor._id}
+                            />
                         ))}
                     </div>
                 </div>

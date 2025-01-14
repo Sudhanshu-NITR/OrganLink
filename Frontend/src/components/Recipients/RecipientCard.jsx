@@ -5,7 +5,7 @@ const RecipientCard = ({ recipient }) => (
     <div className="bg-gray-50 rounded-xl p-6 min-w-[50rem] shadow-sm">
         <div className="flex justify-between items-start">
             <div className="space-y-2">
-            <h3 className="text-xl font-semibold">{recipient.name}</h3>
+            <h3 className="text-xl font-semibold">{recipient.fullName}</h3>
             <div className="text-gray-600">
                 <p>Age: {recipient.age}</p>
                 <p>Blood Group: {recipient.bloodGroup}</p>
