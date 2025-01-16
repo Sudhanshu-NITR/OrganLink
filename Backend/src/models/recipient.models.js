@@ -1,4 +1,5 @@
 import mongoose, {Schema} from "mongoose";
+import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 const recipientSchema = new Schema(
     {
@@ -23,7 +24,8 @@ const recipientSchema = new Schema(
         },
         urgency: {
             type: Number, // 1 = most urgent, 5 = least urgent
-            required: true,
+            // required: true,
+            default: 1,
             min: 1,
             max: 5,
         },
@@ -46,5 +48,7 @@ const recipientSchema = new Schema(
     },
     {timestamps: true}
 );
+
+recipientSchema.plugin(mongooseAggregatePaginate);
 
 export const Recipient = mongoose.model("Recipient", recipientSchema);

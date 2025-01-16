@@ -65,11 +65,14 @@ const getRequests = asyncHandler(async(req, res)=>{
     }
 
     const requests = donor.requests;
+    // console.log(requests);
     
     const requestList = await Promise.all(
         requests.map(async (request) => {
+            console.log(request);
+            
             const recipient = await Recipient.findById(request.recipient);
-            const hospital = await Hospital.findById(request.recipient.hospital);
+            const hospital = await Hospital.findById(recipient.hospital);
             return {
                 ...request.toObject(),
                 recipient: recipient,

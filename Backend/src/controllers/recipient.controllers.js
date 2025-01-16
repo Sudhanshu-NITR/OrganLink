@@ -7,6 +7,8 @@ import { ApiResponse } from '../utils/ApiResponse.js';
 const sendRequest = asyncHandler(async(req, res)=>{
     const {fullName, age, bloodType, organNeeded, phone, email, donor_id} = req.body;
     const hospital = req.hospital._id
+    console.log(req);
+    
     if(
         [fullName, age, bloodType, organNeeded, phone, email, donor_id].some((field) => field?.trim() ==="")
     ){
@@ -24,22 +26,24 @@ const sendRequest = asyncHandler(async(req, res)=>{
         fullName, 
         age, 
         bloodType, 
-        organNeeded, 
-        urgency,
+        organNeeded,
         status: "unmatched",
         hospital,
         donor: donor_id
     })
-    
     const request = await Donor.findByIdAndUpdate(
         donor_id,
         {
             $push: {
-                requests: recipient._id
+                requests: {
+                    recipient: recipient._id
+                }
             }
         },
         { new: true }
     );
+    console.log(recipient);
+    
 
     if(!recipient || !request){
         throw new ApiError("Error generating request!!");
@@ -57,9 +61,10 @@ const sendRequest = asyncHandler(async(req, res)=>{
 });
 
 const searchDonors = asyncHandler(async(req, res)=>{
-    const {organType, bloodGroup, age} = req.query;
+    const {organType, bloodType, age} = req.query;
+    // console.log(req.query);
     
-    if(!organType || !bloodGroup || !age){
+    if(!organType || !bloodType || !age){
         throw new ApiError(409, "Search Parameters were not passed!!");
     }
 
@@ -72,8 +77,8 @@ const searchDonors = asyncHandler(async(req, res)=>{
         },
         {
             $addFields: {
-                isBloodGroupMatch: {
-                    $eq: ["$bloodGroup", bloodGroup] //Boolean value
+                isBloodTypeMatch: {
+                    $eq: ["$bloodType", bloodType] //Boolean value
                 },
                 ageDifference: {
                     $abs: { $subtract: ["$age", parseInt(age)] }
@@ -82,7 +87,7 @@ const searchDonors = asyncHandler(async(req, res)=>{
         },
         {
             $sort: { 
-                isBloodGroupMatch: -1,   //true comes first
+                isBloodTypeMatch: -1,   //true comes first
                 ageDifference: 1   //smaller difference first
             }
         },
@@ -92,6 +97,11 @@ const searchDonors = asyncHandler(async(req, res)=>{
                 localField: "hospital",
                 foreignField: "_id",
                 as: "hospital"
+            }
+        },
+        {
+            $addFields: {
+                hospital: { $first: "$hospital" }
             }
         }
         

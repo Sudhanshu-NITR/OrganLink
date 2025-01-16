@@ -1,6 +1,7 @@
 import mongoose, {Schema} from "mongoose";
 import jwt from "jsonwebtoken"
 import bcrypt from "bcrypt"
+import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 const hospitalSchema = new Schema(
     {
@@ -77,5 +78,7 @@ hospitalSchema.methods.generateRefreshToken = function() {
         }
     )
 }
+
+hospitalSchema.plugin(mongooseAggregatePaginate);
 
 export const Hospital = mongoose.model("Hospital", hospitalSchema);

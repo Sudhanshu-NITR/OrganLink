@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react';
 import RecipientCard from './RecipientCard.jsx';
 import axios from 'axios';
 import SearchResultCard from './SearchResultCard.jsx';
+import { useForm } from 'react-hook-form';
 
 const Recipient = () => {
     const [searchParams, setSearchParams] = useState({
         organType: '',
-        bloodGroup: '',
+        bloodType: '',
         age: ''
     });
     const [searchResults, setSearchResults] = useState([]);
@@ -14,7 +15,7 @@ const Recipient = () => {
         // {
         //     name: 'Sarah Smith',
         //     age: 42,
-        //     bloodGroup: 'A+',
+        //     bloodType: 'A+',
         //     organType: 'Kidney',
         //     status: 'waiting',
         //     urgency: 'High'
@@ -22,32 +23,32 @@ const Recipient = () => {
         // {
         //     name: 'Mike Johnson',
         //     age: 28,
-        //     bloodGroup: 'O-',
+        //     bloodType: 'O-',
         //     organType: 'Kidney',
         //     status: 'waiting',
         //     urgency: 'Medium'
         // }
     ]);
+    const {register, handleSubmit, reset} = useForm();
+
 
     // const donor={
     //     name: "John Smith",
     //     hospitalName: "Apollo Hospitals",
     //     age: 45,
-    //     bloodGroup: "O+",
+    //     bloodType: "O+",
     //     organType: "Kidney",
     //     status: "Available"
     // }
 
-    useEffect(() => {
-        (async () => {
-            try {
-                const response = await axios.get('/api/v1/hospitals/recipient/recipients');
-                if(response.status) setRecipientList(response.data.data);
-            } catch (error) {
-                console.log('Recipient data fetching failed, ERROR: ', error);
-            }
-        })();
-    }, []);
+    useEffect(async() => {
+        try {
+            const response = await axios.get('/api/v1/hospitals/recipient/recipients');
+            if(response.data.success) setRecipientList(response.data.data);
+        } catch (error) {
+            console.log('Recipient data fetching failed, ERROR: ', error);
+        }
+    }, [handleSubmit]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -58,16 +59,18 @@ const Recipient = () => {
     };
 
     const onSearch = async(searchParams) =>{
+        // console.log(searchParams);
+        
         try {
             axios.get("/api/v1/hospitals/recipient/search-donors", {
                 params: {
                     organType: searchParams.organType,
-                    bloodGroup: searchParams.bloodGroup,
+                    bloodType: searchParams.bloodType,
                     age: searchParams.age,
                 },
             })
             .then((response)=>{
-                console.log(response.data.data);
+                // console.log(response.data.data);
                 
                 if(response.data.success){
                     setSearchResults(response.data.data);
@@ -107,13 +110,13 @@ const Recipient = () => {
                     </div>
 
                     <div className="flex flex-col">
-                        <label htmlFor="bloodGroup" className="mb-2 text-sm font-medium text-gray-700">
+                        <label htmlFor="bloodType" className="mb-2 text-sm font-medium text-gray-700">
                             Blood Group
                         </label>
                         <select
-                            id="bloodGroup"
-                            name="bloodGroup"
-                            value={searchParams.bloodGroup}
+                            id="bloodType"
+                            name="bloodType"
+                            value={searchParams.bloodType}
                             onChange={handleInputChange}
                             className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         >
@@ -178,7 +181,7 @@ const Recipient = () => {
                 <h2 className="text-lg font-semibold mb-4">Request History</h2>
                 {recipientList.length > 0 ? (
                     recipientList.map((recipient, index) => (
-                        <RecipientCard key={index} recipient={recipient}/>
+                        <RecipientCard key={index} recipient={recipient} register={register} handleSubmit={handleSubmit} reset={reset}/>
                     ))
                 ) : (
                     <p>No Recipients!!</p>

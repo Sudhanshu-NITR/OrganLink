@@ -3,12 +3,13 @@ import { useForm } from 'react-hook-form';
 import Input from '../Header/Input.jsx';
 import axios from 'axios';
 
-const RecipientForm = ({isFormOpen, setIsFormOpen, donor_id}) => {
-  const {register, handleSubmit, reset} = useForm({donor_id});
+const RecipientForm = ({isFormOpen, setIsFormOpen, donor_id, register, handleSubmit, reset}) => {
 
   const addRecipient = (data) => {
+    data.donor_id = donor_id
+    console.log(data);
     try {
-      axios.post('/api/v1/hospitals/donor/send-request', data)
+      axios.post('/api/v1/hospitals/recipient/send-request', data)
       .then((response)=>{
         if(response.data.success){
           console.log("Request added Successfully!!");
