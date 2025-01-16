@@ -35,14 +35,16 @@ function Header() {
                     <NavLink to='/'>
                         <img src='../../image.png' alt="OrganLink Logo" className="h-16 mx-4" />
                     </NavLink>
-                    <h1 className="text-[2.1rem] font-bold">OrganLink</h1>
+                    <NavLink to='/'>
+                        <h1 className="text-[2.1rem] font-bold">OrganLink</h1>
+                    </NavLink>
                 </div>
                 <nav className="flex text-lg font-medium items-center flex-wrap space-x-4">
                     {
                         navItems.map((item, index)=>(
                             <Link to={item.slug}
                             key = {index}
-                            className=" hover:border-white hover:rounded-[2rem] hover:border-[1.2px] duration-200 h-[7vh] w-[7vw] flex justify-center items-center hover:shadow-lg"    
+                            className=" hover:border-white hover:rounded-[2rem] hover:border-[1.2px] duration-200 h-[7vh] w-[7vw] flex justify-center items-center hover:shadow-lg cursor-pointer"    
                             activeClass="font-bold"
                             spy={true} 
                             smooth={true} 

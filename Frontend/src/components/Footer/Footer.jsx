@@ -68,7 +68,7 @@ function Footer() {
                                 footerItems1.map((item)=>(
                                     <li key={item.name}>
                                         <Link to={item.slug} 
-                                        className="hover:text-[#646c3c]"  
+                                        className="hover:text-[#646c3c] cursor-pointer"  
                                         activeClass="font-bold"
                                         spy={true} 
                                         smooth={true} 

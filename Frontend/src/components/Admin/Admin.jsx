@@ -1,5 +1,6 @@
 import React from 'react';
 import { Building2, Users, HandshakeIcon } from 'lucide-react';
+import { NavLink } from 'react-router-dom'
 
 const StatCard = ({ icon: Icon, title, count, iconBackground }) => (
   <div className="bg-white rounded-lg p-6 flex items-center space-x-4 shadow-sm">
@@ -103,18 +104,18 @@ const Dashboard = () => {
       <div className="mt-8">
         <h2 className="text-xl font-semibold text-gray-800 mb-4">Quick Actions</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <button className="p-4 bg-white rounded-lg shadow-sm hover:bg-gray-50 transition-colors text-left">
+          <NavLink to="/donors" className="p-4 bg-white rounded-lg shadow-sm hover:bg-gray-50 transition-colors text-left">
             <h3 className="font-medium text-gray-900">Add New Donor</h3>
             <p className="text-sm text-gray-500 mt-1">Register a new organ donor</p>
-          </button>
-          <button className="p-4 bg-white rounded-lg shadow-sm hover:bg-gray-50 transition-colors text-left">
+          </NavLink>
+          <NavLink to="/recipients" className="p-4 bg-white rounded-lg shadow-sm hover:bg-gray-50 transition-colors text-left">
             <h3 className="font-medium text-gray-900">Add Recipient</h3>
             <p className="text-sm text-gray-500 mt-1">Register a new recipient</p>
-          </button>
-          <button className="p-4 bg-white rounded-lg shadow-sm hover:bg-gray-50 transition-colors text-left">
+          </NavLink>
+          <NavLink to="/match-history" className="p-4 bg-white rounded-lg shadow-sm hover:bg-gray-50 transition-colors text-left">
             <h3 className="font-medium text-gray-900">View Matches</h3>
             <p className="text-sm text-gray-500 mt-1">Check current matches</p>
-          </button>
+          </NavLink>
           <button className="p-4 bg-white rounded-lg shadow-sm hover:bg-gray-50 transition-colors text-left">
             <h3 className="font-medium text-gray-900">Generate Report</h3>
             <p className="text-sm text-gray-500 mt-1">Create activity report</p>
