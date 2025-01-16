@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import RecipientForm from './RecipientForm';
 
-const SearchResultCard = ({ donor, register, handleSubmit, reset }) => {
+const SearchResultCard = ({ donor }) => {
     const [isFormOpen, setIsFormOpen] = useState(false);
 
     return (
@@ -29,7 +29,7 @@ const SearchResultCard = ({ donor, register, handleSubmit, reset }) => {
             </div>
 
             {isFormOpen && (
-                <RecipientForm isFormOpen={isFormOpen} setIsFormOpen={setIsFormOpen} donor_id={donor._id} register={register} handleSubmit={handleSubmit} reset={reset}/>
+                <RecipientForm isFormOpen={isFormOpen} setIsFormOpen={setIsFormOpen} donor_id={donor._id}/>
             )}
         </div>
     );

@@ -21,7 +21,7 @@ function Home() {
                             <img src="../../heart-solid.svg" alt="" className='h-[2rem]'/>
                             <p className='text-5xl'>1000+</p>
                             <hr className="my-3" />
-                            <p className='text-2xl'>Donations</p>
+                            <p className='text-2xl'>Lives Saved...</p>
                         </div>
                         <div className='h-full w-56 rounded-2xl bg-[#fff4ec] shadow-xl p-[2rem]'>
                             <img src="../../hospital-solid.svg" alt="" className='h-[2rem]'/>

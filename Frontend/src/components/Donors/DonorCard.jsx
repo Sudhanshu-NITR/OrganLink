@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
 import { Trash2, ChevronDown, ChevronUp, Check, X, LogIn } from 'lucide-react'
 import axios from 'axios'
+import { format } from 'date-fns'
 
 function DonorCard({
     status = "available", 
@@ -24,6 +25,7 @@ function DonorCard({
                 .then((response)=>{
                     if(response.data.success){
                         setRequestList(response.data.data);
+                        // console.log(response);
                     }
                 })
                 .catch((error)=>{
@@ -95,9 +97,9 @@ function DonorCard({
                                 .map((item, index) => (
                                     <RequestItem 
                                         key={item._id || index} 
-                                        recipientName={item.fullName || 'Unknown'}
+                                        recipientName={item.recipient.fullName || 'Unknown'}
                                         hospitalName={item.hospital?.name || 'Unknown'}
-                                        date={item.createdAt ? format(new Date(item.createdAt), 'dd/MM/yyyy') : 'N/A'}
+                                        date={item.recipient.createdAt ? format(new Date(item.recipient.createdAt), 'dd/MM/yyyy') : 'N/A'}
                                         status={item.status}
                                         recipientId={item.recipient._id}
                                         donor_id={id}

@@ -3,11 +3,10 @@ import { useForm } from 'react-hook-form';
 import Input from '../Header/Input.jsx';
 import axios from 'axios';
 
-const RecipientForm = ({isFormOpen, setIsFormOpen, donor_id, register, handleSubmit, reset}) => {
-
+const RecipientForm = ({isFormOpen, setIsFormOpen, donor_id}) => {
+  const {register, handleSubmit, reset} = useForm();
   const addRecipient = (data) => {
     data.donor_id = donor_id
-    console.log(data);
     try {
       axios.post('/api/v1/hospitals/recipient/send-request', data)
       .then((response)=>{

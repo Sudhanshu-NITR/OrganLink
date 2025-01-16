@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import RecipientCard from './RecipientCard.jsx';
 import axios from 'axios';
 import SearchResultCard from './SearchResultCard.jsx';
-import { useForm } from 'react-hook-form';
 
 const Recipient = () => {
     const [searchParams, setSearchParams] = useState({
@@ -29,9 +28,6 @@ const Recipient = () => {
         //     urgency: 'Medium'
         // }
     ]);
-    const {register, handleSubmit, reset} = useForm();
-
-
     // const donor={
     //     name: "John Smith",
     //     hospitalName: "Apollo Hospitals",
@@ -41,14 +37,16 @@ const Recipient = () => {
     //     status: "Available"
     // }
 
-    useEffect(async() => {
-        try {
-            const response = await axios.get('/api/v1/hospitals/recipient/recipients');
-            if(response.data.success) setRecipientList(response.data.data);
-        } catch (error) {
-            console.log('Recipient data fetching failed, ERROR: ', error);
-        }
-    }, [handleSubmit]);
+    useEffect(() => {
+        (async()=>{
+            try {
+                const response = await axios.get('/api/v1/hospitals/recipient/recipients');
+                if(response.data.success) setRecipientList(response.data.data);
+            } catch (error) {
+                console.log('Recipient data fetching failed, ERROR: ', error);
+            }
+        })();
+    }, []);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -181,7 +179,7 @@ const Recipient = () => {
                 <h2 className="text-lg font-semibold mb-4">Request History</h2>
                 {recipientList.length > 0 ? (
                     recipientList.map((recipient, index) => (
-                        <RecipientCard key={index} recipient={recipient} register={register} handleSubmit={handleSubmit} reset={reset}/>
+                        <RecipientCard key={index} recipient={recipient}/>
                     ))
                 ) : (
                     <p>No Recipients!!</p>
