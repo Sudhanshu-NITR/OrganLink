@@ -25,7 +25,6 @@ function DonorCard({
                 .then((response)=>{
                     if(response.data.success){
                         setRequestList(response.data.data);
-                        // console.log(response);
                     }
                 })
                 .catch((error)=>{
@@ -50,7 +49,7 @@ function DonorCard({
                 <div className="flex flex-col items-end justify-center">
                     {donorStatus === "available" 
                         ? <CrossButton id={id} isOpen={isOpen} setIsOpen={setIsOpen} donorList={donorList} setDonorList={setDonorList}/>
-                        : <CheckButton id={id} />
+                        : <CheckButton id={id} isOpen={isOpen} setIsOpen={setIsOpen} donorList={donorList} setDonorList={setDonorList}/>
                     }
                 </div>
             </div>
@@ -60,37 +59,24 @@ function DonorCard({
                     <div className="p-6">
                         <h4 className="font-semibold mb-2 ">Recent Requests</h4>
                         <div className="space-y-3">
-                            {/* <RequestItem 
-                                recipientName="Jane Smith"
-                                hospitalName="Memorial Hospital"
-                                date="2025-01-07"
-                                status="Rejected"
-                            />
-                            <RequestItem 
-                                recipientName="Mike Johnson"
-                                hospitalName="General Hospital"
-                                date="2025-01-06"
-                                status="Pending"
-                            /> */}
                             {requestList.length>0 ? 
                                 (requestList
                                 .filter(item => item.status === "Accepted")
                                 .map((item, index) => (
                                     <RequestItem 
-                                        key={item._id || index} 
-                                        recipientName={item.fullName || 'Unknown'}
-                                        hospitalName={item.hospital?.name || 'Unknown'}
-                                        date={item.createdAt ? format(new Date(item.createdAt), 'dd/MM/yyyy') : 'N/A'}
-                                        status={item.status}
-                                        recipientId={item.recipient._id}
-                                        donor_id={id}
-                                        donorStatus={donorStatus}
-                                        setDonorStatus={setDonorStatus}
+                                    key={item._id || index} 
+                                    recipientName={item.recipient.fullName || 'Unknown'}
+                                    hospitalName={item.hospital?.name || 'Unknown'}
+                                    date={item.recipient.createdAt ? format(new Date(item.recipient.createdAt), 'dd/MM/yyyy') : 'N/A'}
+                                    status={item.status}
+                                    recipient_id={item.recipient._id}
+                                    donor_id={id}
+                                    donorStatus={donorStatus}
+                                    setDonorStatus={setDonorStatus}
                                     />
                                 )))
                                 : <p className='text-red-600 font-normal font-serif '>No Requests as of now</p>
                             }
-
                             {
                                 requestList
                                 .filter(item => item.status !== "Accepted")
@@ -120,8 +106,7 @@ function RequestItem({
     recipientName, 
     hospitalName, 
     date, 
-    status, 
-    donorStatus, 
+    status,
     setDonorStatus, 
     recipient_id, 
     donor_id 
@@ -200,7 +185,8 @@ function RequestItem({
     )
 }
 
-function CheckButton({ id, donorList, setDonorList }) {
+
+function CheckButton({ id, isOpen, setIsOpen, donorList, setDonorList  }) {
 
     return (
         <div className="flex flex-col items-end">
@@ -208,20 +194,16 @@ function CheckButton({ id, donorList, setDonorList }) {
                 Status: matched 
                 <span className="text-4xl font-extrabold text-green-600">✓</span>
             </div>
-            <NavLink to={`/request-history/${id}`}>
+            <div className="flex items-end space-x-4">
                 <button
                     type="button"
-                    className="px-4 w-full py-2 rounded-lg bg-blue-400 text-white hover:bg-blue-500 transition-colors"
+                    onClick={() => setIsOpen(!isOpen)}
+                    className="px-4 py-2 rounded-lg bg-blue-400 text-white hover:bg-blue-500 transition-colors flex items-center gap-2"
                 >
                     Request History
+                    {isOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                 </button>
-                <button 
-                    type="button"
-                    className="bg-red-600 hover:bg-red-700 transition-colors w-8 h-8 flex justify-center items-center rounded-md text-white"
-                >
-                    <Trash2 size={20} />
-                </button>
-            </NavLink>
+            </div>
         </div>
     )
 }

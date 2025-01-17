@@ -97,66 +97,20 @@ const acceptRequest = asyncHandler(async(req, res)=>{
     const { donor_id, recipient_id } = req.body;
     const hospital = req.hospital;
     
-    // console.log(donor_id, recipient_id);
     if(!donor_id || !recipient_id){
-        throw new ApiError(400, "Error while recieving donor & reciever data");
+        throw new ApiError(400, "Error while receiving donor & receiver data");
     }
     
     const donor = await Donor.findById(donor_id)
     const recipient = await Recipient.findById(recipient_id)
 
     if(!donor || !recipient){
-        throw new ApiError(400, "Error while retrieving donor & reciever data");
+        throw new ApiError(400, "Error while retrieving donor & receiver data");
     }
 
-    if(donor.status=='unavailable'){
+    if(donor.status === 'unavailable'){
         throw new ApiError(409, "organ already donated");
     }
-
-    const updatedDonor = await Donor.findByIdAndUpdate(
-        donor._id,
-        [
-        {
-            $set: {
-                status: "unavailable"
-            }
-        },
-        {
-            $set: {
-                requests: {
-                    $map: {
-                        input: "$requests",
-                        as: "request",
-                        in: {
-                            $mergeObjects: [
-                                "$$request",
-                                {
-                                    status: {
-                                        $cond: [
-                                            { $eq: ["$$request.recipient", recipient_id] },
-                                            "Accepted",
-                                            "Rejected"
-                                        ]
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        }
-        ]
-    )
-
-    const updatedRecipient = await Recipient.findByIdAndUpdate(
-        recipient_id,
-        {
-            $set: {
-                status: "matched"
-            }
-        },
-        {new: true}
-    ).select("-password");
     
     const existingMatch = await Match.findOne({
         $or: [{ recipient_id }, { donor_id }]
@@ -165,6 +119,36 @@ const acceptRequest = asyncHandler(async(req, res)=>{
     if(existingMatch){
         throw new ApiError(400, "Match already exists or organ already donated!!")
     }
+
+    const updatedDonor = await Donor.findByIdAndUpdate(
+        donor._id,
+        {
+            $set: {
+                status: "unavailable",
+                recipient: recipient_id
+            },
+            $set: {
+                requests: donor.requests.map(request => ({
+                    ...request.toObject(),
+                    status: request.recipient.toString() === recipient_id.toString() 
+                        ? "Accepted" 
+                        : "Rejected"
+                }))
+            }
+        },
+        { new: true }
+    );
+
+    const updatedRecipient = await Recipient.findByIdAndUpdate(
+        recipient_id,
+        {
+            $set: {
+                status: "matched"
+            }
+        },
+        { new: true }
+    ).select("-password");
+    
 
     const match = await Match.create({
         donor: donor._id,
