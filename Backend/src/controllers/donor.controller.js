@@ -5,7 +5,8 @@ import {ApiError} from "../utils/ApiError.js"
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { Hospital } from "../models/hospital.models.js";
 import { Match } from "../models/match.models.js"
-import mongoose from 'mongoose';
+import mongoose, { mongo } from 'mongoose';
+import { request } from "http";
 
 const addDonor = asyncHandler(async(req, res)=>{
     const hospital = req.hospital;
@@ -69,7 +70,7 @@ const getRequests = asyncHandler(async(req, res)=>{
     
     const requestList = await Promise.all(
         requests.map(async (request) => {
-            console.log(request);
+            // console.log(request);
             
             const recipient = await Recipient.findById(request.recipient);
             const hospital = await Hospital.findById(recipient.hospital);
@@ -93,12 +94,14 @@ const getRequests = asyncHandler(async(req, res)=>{
 });
 
 const acceptRequest = asyncHandler(async(req, res)=>{
-    const {donor_id, recipient_id} = req.body;
-
+    const { donor_id, recipient_id } = req.body;
+    const hospital = req.hospital;
+    
+    // console.log(donor_id, recipient_id);
     if(!donor_id || !recipient_id){
-        throw new ApiError(400, "Error while retrieving donor & reciever data");
+        throw new ApiError(400, "Error while recieving donor & reciever data");
     }
-
+    
     const donor = await Donor.findById(donor_id)
     const recipient = await Recipient.findById(recipient_id)
 
@@ -111,14 +114,39 @@ const acceptRequest = asyncHandler(async(req, res)=>{
     }
 
     const updatedDonor = await Donor.findByIdAndUpdate(
-        donor_id,
+        donor._id,
+        [
         {
             $set: {
                 status: "unavailable"
             }
         },
-        {new: true}
-    ).select("-password");
+        {
+            $set: {
+                requests: {
+                    $map: {
+                        input: "$requests",
+                        as: "request",
+                        in: {
+                            $mergeObjects: [
+                                "$$request",
+                                {
+                                    status: {
+                                        $cond: [
+                                            { $eq: ["$$request.recipient", recipient_id] },
+                                            "Accepted",
+                                            "Rejected"
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+        ]
+    )
 
     const updatedRecipient = await Recipient.findByIdAndUpdate(
         recipient_id,
@@ -130,6 +158,13 @@ const acceptRequest = asyncHandler(async(req, res)=>{
         {new: true}
     ).select("-password");
     
+    const existingMatch = await Match.findOne({
+        $or: [{ recipient_id }, { donor_id }]
+    })
+
+    if(existingMatch){
+        throw new ApiError(400, "Match already exists or organ already donated!!")
+    }
 
     const match = await Match.create({
         donor: donor._id,
@@ -139,13 +174,6 @@ const acceptRequest = asyncHandler(async(req, res)=>{
     if(!match){
         throw new ApiError(500, "Error while creating match entry");
     }
-
-    await Donor.findByIdAndUpdate(
-        donor._id,
-        {
-            status: "unavailable"
-        }
-    )
 
     return res
     .status(200)

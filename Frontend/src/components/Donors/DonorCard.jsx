@@ -101,7 +101,7 @@ function DonorCard({
                                         hospitalName={item.hospital?.name || 'Unknown'}
                                         date={item.recipient.createdAt ? format(new Date(item.recipient.createdAt), 'dd/MM/yyyy') : 'N/A'}
                                         status={item.status}
-                                        recipientId={item.recipient._id}
+                                        recipient_id={item.recipient._id}
                                         donor_id={id}
                                         donorStatus={donorStatus}
                                         setDonorStatus={setDonorStatus}
@@ -133,10 +133,9 @@ function RequestItem({
 
     const handleAccept = () => {
         try {
-            axios.patch(`/api/v1/hospitals/donor/accept-request/${recipient_id}`,{
-                status:"Accepted",
+            axios.patch(`/api/v1/hospitals/donor/accept-request`,{
+                recipient_id,
                 donor_id,
-                recipient_id
             })
             .then((response)=>{
                 if(response.data.success){
