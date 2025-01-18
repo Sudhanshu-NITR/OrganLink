@@ -5,7 +5,7 @@ import {ApiError} from "../utils/ApiError.js"
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { Hospital } from "../models/hospital.models.js";
 import { Match } from "../models/match.models.js"
-import mongoose, { mongo } from 'mongoose';
+import mongoose from 'mongoose';
 import { request } from "http";
 
 const addDonor = asyncHandler(async(req, res)=>{
@@ -17,7 +17,7 @@ const addDonor = asyncHandler(async(req, res)=>{
     ){
         throw new ApiError(400, "All fields are required");
     }
-    console.log(hospital);
+    // console.log(hospital);
     
     const existingRequest = await Donor.findOne({
         $and: [{fullName, organType}]
@@ -95,18 +95,13 @@ const getRequests = asyncHandler(async(req, res)=>{
 
 const acceptRequest = asyncHandler(async(req, res)=>{
     const { donor_id, recipient_id } = req.body;
-    const hospital = req.hospital;
+    const donorHospital = req.hospital;
     
     if(!donor_id || !recipient_id){
         throw new ApiError(400, "Error while receiving donor & receiver data");
     }
     
     const donor = await Donor.findById(donor_id)
-    const recipient = await Recipient.findById(recipient_id)
-
-    if(!donor || !recipient){
-        throw new ApiError(400, "Error while retrieving donor & receiver data");
-    }
 
     if(donor.status === 'unavailable'){
         throw new ApiError(409, "organ already donated");
@@ -119,21 +114,21 @@ const acceptRequest = asyncHandler(async(req, res)=>{
     if(existingMatch){
         throw new ApiError(400, "Match already exists or organ already donated!!")
     }
-
+    
+    const updatedRequests = donor.requests.map(request => ({
+        ...request.toObject(),
+        status: request.recipient.toString() === recipient_id.toString() 
+            ? "Accepted" 
+            : "Rejected"
+    }));
+    
     const updatedDonor = await Donor.findByIdAndUpdate(
         donor._id,
         {
             $set: {
                 status: "unavailable",
-                recipient: recipient_id
-            },
-            $set: {
-                requests: donor.requests.map(request => ({
-                    ...request.toObject(),
-                    status: request.recipient.toString() === recipient_id.toString() 
-                        ? "Accepted" 
-                        : "Rejected"
-                }))
+                recipient: recipient_id,
+                requests: updatedRequests
             }
         },
         { new: true }
@@ -149,10 +144,12 @@ const acceptRequest = asyncHandler(async(req, res)=>{
         { new: true }
     ).select("-password");
     
-
+    const recipientHospital = await Hospital.findById(updatedRecipient.hospital);
     const match = await Match.create({
-        donor: donor._id,
-        recipient: recipient._id
+        donor: updatedDonor._id,
+        recipient: updatedRecipient._id,
+        donorHospital,
+        recipientHospital
     });
 
     if(!match){
@@ -261,22 +258,21 @@ const deleteDonor = asyncHandler(async(req, res)=>{
         throw new ApiError(400, "Donor id was not passed!!");
     }
 
-    const donor = Donor.findByIdAndDelete(id, (error, docs)=>{
-        if(error){
-            throw new ApiError(500, "Something went wrong while deleting the donor")
-        }
-        else{
-            return res
-            .status(200)
-            .json(
-                new ApiResponse(
-                    200,
-                    docs,
-                    "Donor deleted successfully!!"
-                )
-            )
-        }
-    });
+    const donor = await Donor.findByIdAndDelete(id).select("-password");
+
+    if(!donor){
+        throw new ApiError(500, "Something went wrong while deleting the donor")
+    }
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            donor,
+            "Donor deleted successfully!!"
+        )
+    )
 
 });
 

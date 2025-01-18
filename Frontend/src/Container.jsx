@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { login, logout } from "./store/authSlice";
+import { login, logout } from "./store/authSlice.js";
 import axios from "axios";
 import Sidebar, { SidebarItem } from "./components/Sidebar/Sidebar.jsx";
 import {
@@ -22,8 +22,9 @@ function Container({ children }) {
     const checkAuth = async () => {
       try {
         const response = await axios.get("/api/v1/hospitals/current-hospital");
-        if (response.status) {
-          dispatch(login(response.data));
+        if (response.data.success) {
+          const hospital = response.data.data;
+          dispatch(login(hospital));
           authStatus = true;
         } else {
           dispatch(logout());
@@ -37,7 +38,7 @@ function Container({ children }) {
     };
 
     checkAuth();
-  }, [navigate]);
+  }, []);
 
   return (
     <div className="w-full h-full flex">

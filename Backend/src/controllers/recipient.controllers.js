@@ -42,7 +42,7 @@ const sendRequest = asyncHandler(async(req, res)=>{
         },
         { new: true }
     );
-    console.log(recipient);
+    // console.log(recipient);
     
 
     if(!recipient || !request){
@@ -165,8 +165,33 @@ const recipientList = asyncHandler(async(req, res)=>{
     );
 });
 
+const deleteRecipient = asyncHandler(async(req, res)=>{
+    const {id} = req.params;
+
+    if(!id){
+        throw new ApiError(400, "Recipient id was not passed!!");
+    }
+
+    const recipient = await Recipient.findByIdAndDelete(id).select("-password");
+
+    if(!donor){
+        throw new ApiError(500, "Something went wrong while deleting the recipient")
+    }
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            recipient,
+            "Recipient deleted successfully!!"
+        )
+    )
+})
+
 export {
     sendRequest,
     searchDonors,
-    recipientList
+    recipientList,
+    deleteRecipient
 }

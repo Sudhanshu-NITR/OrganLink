@@ -13,6 +13,16 @@ const matchSchema = Schema(
             ref: 'Recipient',
             required: true,
         },
+        donorHospital: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Hospital',
+            required: true
+        },
+        recipientHospital: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Hospital',
+            required: true
+        },
         status: {
             type: String,
             required: true,

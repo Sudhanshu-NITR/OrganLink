@@ -1,11 +1,14 @@
 import { MoreVertical, ChevronLast, ChevronFirst } from "lucide-react"
 import { useContext, createContext, useState } from "react"
 import { Link } from "react-router-dom"
+import { useSelector } from 'react-redux'
 
 const SidebarContext = createContext()
 
 export default function Sidebar({ children }) {
   const [expanded, setExpanded] = useState(false)
+  const hospital = useSelector((state)=> state.auth.userData);
+  console.log(hospital);
   
   return (
     <aside className="h-screen">

@@ -1,12 +1,13 @@
 import {asyncHandler} from '../utils/asyncHandler.js'
 import {ApiError} from "../utils/ApiError.js"
 import { ApiResponse } from '../utils/ApiResponse.js';
-import { Mongoose } from 'mongoose';
+import mongoose from 'mongoose';
+import { Match } from '../models/match.models.js';
 
 const getMatchesHistory = asyncHandler(async(req, res)=>{
-    const {hospital_id} = req.body;
+    const hospital = req.hospital;
 
-    if(!hospital_id){
+    if(!hospital._id){
         throw new ApiError(400, "Hospital Id invalid")
     }
 
@@ -28,7 +29,7 @@ const getMatchesHistory = asyncHandler(async(req, res)=>{
         },
         {
             $match:{
-                hospital: new Mongoose.Types.ObjectId(hospital_id)
+                "donorDetails.hospital": new mongoose.Types.ObjectId(hospital._id)
             }   
         },
         {
@@ -72,7 +73,7 @@ const getMatchesHistory = asyncHandler(async(req, res)=>{
         },
         {
             $match:{
-                hospital: new Mongoose.Types.ObjectId(hospital_id)
+                "recipientDetails.hospital": new mongoose.Types.ObjectId(hospital._id)
             }   
         },
         {

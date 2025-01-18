@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react'
-import { NavLink } from 'react-router-dom'
 import { Trash2, ChevronDown, ChevronUp, Check, X, LogIn } from 'lucide-react'
 import axios from 'axios'
 import { format } from 'date-fns'
 
 function DonorCard({
-    status = "available", 
+    status, 
     fullName, 
     age, 
     bloodType, 
@@ -17,6 +16,7 @@ function DonorCard({
     const [isOpen, setIsOpen] = useState(false);
     const [requestList, setRequestList] = useState([]);
     const [donorStatus, setDonorStatus] = useState(status);
+    
 
     useEffect(() => {
         (async () => {
@@ -119,15 +119,15 @@ function RequestItem({
     const handleAccept = () => {
         try {
             axios.patch(`/api/v1/hospitals/donor/accept-request`,{
-                recipient_id,
-                donor_id,
+              recipient_id,
+              donor_id,
             })
             .then((response)=>{
-                if(response.data.success){
-                    console.log("Request accepted");
-                    setRequestStatus("Accepted");
-                    setDonorStatus("unavailable");
-                }
+              if(response.data.success){
+                console.log("Request accepted");
+                setRequestStatus("Accepted");
+                setDonorStatus("unavailable");
+              }
             })
         } catch (error) {
             console.log("Error while accepting request, Error: ", error);
@@ -140,10 +140,10 @@ function RequestItem({
                 status:"Rejected",
             })
             .then((response)=>{
-                if(response.data.success){
-                    console.log("Request rejected");
-                    setRequestStatus("Rejected");
-                }
+              if(response.data.success){
+                  console.log("Request rejected");
+                  setRequestStatus("Rejected");
+              }
             })
         } catch (error) {
             console.log("Error while accepting request, Error: ", error);
@@ -165,18 +165,18 @@ function RequestItem({
                     requestStatus=="Pending" && 
                     <div className="flex gap-2">
                         <button
-                            onClick={handleAccept}
-                            className="w-6 h-6 bg-green-100 hover:bg-green-200 transition-colors rounded flex items-center justify-center"
-                            title="Accept Request"
+                          onClick={handleAccept}
+                          className="w-6 h-6 bg-green-100 hover:bg-green-200 transition-colors rounded flex items-center justify-center"
+                          title="Accept Request"
                         >
-                            <Check size={14} className="text-green-600" />
+                          <Check size={14} className="text-green-600" />
                         </button>
                         <button
-                            onClick={handleReject}
-                            className="w-6 h-6 bg-red-100 hover:bg-red-200 transition-colors rounded flex items-center justify-center"
-                            title="Reject Request"
+                          onClick={handleReject}
+                          className="w-6 h-6 bg-red-100 hover:bg-red-200 transition-colors rounded flex items-center justify-center"
+                          title="Reject Request"
                         >
-                            <X size={14} className="text-red-600" />
+                          <X size={14} className="text-red-600" />
                         </button>
                     </div>
                 }
@@ -186,7 +186,7 @@ function RequestItem({
 }
 
 
-function CheckButton({ id, isOpen, setIsOpen, donorList, setDonorList  }) {
+function CheckButton({ id, isOpen, setIsOpen}) {
 
     return (
         <div className="flex flex-col items-end">
@@ -209,13 +209,16 @@ function CheckButton({ id, isOpen, setIsOpen, donorList, setDonorList  }) {
 }
 
 function CrossButton({ id, isOpen, setIsOpen, donorList, setDonorList  }) {
-
+    // console.log(donorList);
+    
     const deleteDonor = async()=>{
         try {
             await axios.delete(`/api/v1/hospitals/donor/delete/${id}`)
             .then((response)=>{
-                if(response.status){
+                if(response.data.success){
                     const newDonorList = donorList.filter((item)=> item._id!=id)
+                    console.log(newDonorList);
+                    
                     setDonorList(newDonorList);
                 }
             })

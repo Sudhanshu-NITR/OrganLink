@@ -10,32 +10,7 @@ const Recipient = () => {
         age: ''
     });
     const [searchResults, setSearchResults] = useState([]);
-    const [recipientList, setRecipientList] = useState([
-        // {
-        //     name: 'Sarah Smith',
-        //     age: 42,
-        //     bloodType: 'A+',
-        //     organType: 'Kidney',
-        //     status: 'waiting',
-        //     urgency: 'High'
-        // },
-        // {
-        //     name: 'Mike Johnson',
-        //     age: 28,
-        //     bloodType: 'O-',
-        //     organType: 'Kidney',
-        //     status: 'waiting',
-        //     urgency: 'Medium'
-        // }
-    ]);
-    // const donor={
-    //     name: "John Smith",
-    //     hospitalName: "Apollo Hospitals",
-    //     age: 45,
-    //     bloodType: "O+",
-    //     organType: "Kidney",
-    //     status: "Available"
-    // }
+    const [recipientList, setRecipientList] = useState([]);
 
     useEffect(() => {
         (async()=>{
@@ -85,7 +60,7 @@ const Recipient = () => {
     return (
         <div className="w-full h-full flex flex-col items-center justify-center p-16 space-y-4 bg-[#fff4ec]">
             <div className="flex flex-col space-y-4 min-w-[50rem] items-center">
-                    {/* <h2 className='text-2xl font-serif font-medium'>Search Donors</h2> */}
+                    <h2 className='text-xl font-serif font-medium'>Search Donors</h2>
                 <div className="grid grid-cols-3 gap-4">
                     <div className="flex flex-col">
                         <label htmlFor="organType" className="mb-2 text-sm font-medium text-gray-700">
@@ -153,13 +128,6 @@ const Recipient = () => {
                     Search Donors
                 </button>
             </div>
-            {/* // TODO: 
-            {
-                searchResults.length>0 && 
-                searchResults.map((donor, index)=>{
-                    
-                })
-            } */}
             {searchResults.length > 0 && (
                 <div className="mb-8">
                     <h2 className="text-lg font-semibold mb-4">Search Results</h2>
@@ -179,7 +147,7 @@ const Recipient = () => {
                 <h2 className="text-lg font-semibold mb-4">Request History</h2>
                 {recipientList.length > 0 ? (
                     recipientList.map((recipient, index) => (
-                        <RecipientCard key={index} recipient={recipient}/>
+                        <RecipientCard key={index} recipient={recipient} recipientList={recipientList} setRecipientList={setRecipientList}/>
                     ))
                 ) : (
                     <p>No Recipients!!</p>
