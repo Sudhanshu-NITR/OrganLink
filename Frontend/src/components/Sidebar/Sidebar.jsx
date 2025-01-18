@@ -7,8 +7,7 @@ const SidebarContext = createContext()
 
 export default function Sidebar({ children }) {
   const [expanded, setExpanded] = useState(false)
-  const hospital = useSelector((state)=> state.auth.userData);
-  console.log(hospital);
+  const hospital = useSelector((state)=> state.auth.hospital);
   
   return (
     <aside className="h-screen">
@@ -35,7 +34,7 @@ export default function Sidebar({ children }) {
 
         <div className="border-t flex p-3">
           <img
-            src="https://ui-avatars.com/api/?background=c7d2fe&color=3730a3&bold=true"
+            src={hospital.avatar}
             alt=""
             className="w-10 h-10 rounded-md"
           />
@@ -46,8 +45,8 @@ export default function Sidebar({ children }) {
           `}
           >
             <div className="leading-4">
-              <h4 className="font-semibold">John Doe</h4>
-              <span className="text-xs text-gray-600">johndoe@gmail.com</span>
+              <h4 className="font-semibold">{hospital.name}</h4>
+              <span className="text-xs text-gray-600">{hospital.email}</span>
             </div>
             <MoreVertical size={20} />
           </div>

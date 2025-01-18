@@ -253,7 +253,7 @@ const getCurrentHospital = asyncHandler(async(req, res)=>{
     ))
 });
 
-const updateAccountDetails = asyncHandler(async(req, res)=>{
+const updateProfileDetails = asyncHandler(async(req, res)=>{
     const {name, email, phone, address} = req.body;
     
     if(!name || !email || !phone || !address){
@@ -322,6 +322,6 @@ export {
     refreshAcessToken,
     changeCurrentPassword,
     getCurrentHospital,
-    updateAccountDetails,
+    updateProfileDetails,
     updateHospitalAvatar,
 };

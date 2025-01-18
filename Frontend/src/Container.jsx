@@ -23,22 +23,23 @@ function Container({ children }) {
       try {
         const response = await axios.get("/api/v1/hospitals/current-hospital");
         if (response.data.success) {
-          const hospital = response.data.data;
-          dispatch(login(hospital));
-          authStatus = true;
+            const hospital = response.data.data;
+            dispatch(login(hospital));
         } else {
-          dispatch(logout());
-          authStatus = false;
+            dispatch(logout());
+            navigate("/login");
         }
       } catch (error) {
-        console.error("Authentication error:", error);
-        dispatch(logout());
-        navigate("/");
+          console.error("Authentication error:", error);
+          dispatch(logout());
+          navigate("/login");
       }
     };
 
-    checkAuth();
-  }, []);
+    if (!authStatus) {
+        checkAuth();
+    }
+  }, [dispatch, navigate, authStatus]);
 
   return (
     <div className="w-full h-full flex">
@@ -50,7 +51,7 @@ function Container({ children }) {
                 <SidebarItem icon={<Users size={20} />} text="Recipient" link="/recipients"/>
                 <SidebarItem icon={<History size={20} />} text="Match History" link={"/match-history"}/>
                 <hr className="my-3" />
-                <SidebarItem icon={<Settings size={20} />} text="Settings" />
+                <SidebarItem icon={<Settings size={20} />} text="Settings" link={"/settings"} />
                 <SidebarItem icon={<HelpCircle size={20} />} text="Help" />
               </Sidebar>
             )}

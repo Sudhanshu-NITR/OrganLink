@@ -25,7 +25,8 @@
     "react-hook-form": "^7.54.2",
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.1.1",
-    "react-scroll": "^1.9.0"
+    "react-scroll": "^1.9.0",
+    "redux-persist": "^6.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",

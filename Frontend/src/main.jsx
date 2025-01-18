@@ -1,21 +1,23 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import Layout from './Layout.jsx'
-import Home from './components/Home/Home.jsx'
-import Register from './components/Register/Register.jsx'
-import { Provider } from 'react-redux'
-import store from './store/store.js'
-import Login from './components/Login/Login.jsx'
-import Admin from './components/Admin/Admin.jsx'
-import AuthLayout from './AuthLayout.jsx'
-import Container from './Container.jsx'
-import Donors from './components/Donors/Donors.jsx'
-import Recipients from './components/Recipients/Recipients.jsx'
-import MatchHistory from './components/MatchHistory/MatchHIstory.jsx'
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import './index.css';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import Layout from './Layout.jsx';
+import Home from './components/Home/Home.jsx';
+import Register from './components/Register/Register.jsx';
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
+import { store, persistor } from './store/store.js';
+import Login from './components/Login/Login.jsx';
+import Admin from './components/Admin/Admin.jsx';
+import AuthLayout from './AuthLayout.jsx';
+import Container from './Container.jsx';
+import Donors from './components/Donors/Donors.jsx';
+import Recipients from './components/Recipients/Recipients.jsx';
+import MatchHistory from './components/MatchHistory/MatchHIstory.jsx';
+import Settings from './components/Settings/Settings.jsx';
 
-const router = createBrowserRouter([  
+const router = createBrowserRouter([
   {
     path: "/",
     element: (
@@ -59,7 +61,7 @@ const router = createBrowserRouter([
       {
         path: "/recipients",
         element: (
-          <AuthLayout authentication={true} request={"/donors"}>
+          <AuthLayout authentication={true} request={"/recipients"}>
             <Recipients />
           </AuthLayout>
         )
@@ -67,17 +69,27 @@ const router = createBrowserRouter([
       {
         path: "/match-history",
         element: (
-          <AuthLayout authentication={true} request={"/donors"}>
+          <AuthLayout authentication={true} request={"/match-history"}>
             <MatchHistory />
+          </AuthLayout>
+        )
+      },
+      {
+        path: "/settings",
+        element: (
+          <AuthLayout authentication={true} request={"/settings"}>
+            <Settings />
           </AuthLayout>
         )
       }
     ]
   }
-])
+]);
 
 createRoot(document.getElementById('root')).render(
   <Provider store={store}>
-    <RouterProvider router={router} />
-  </Provider>,
-)
+    <PersistGate loading={null} persistor={persistor}>
+      <RouterProvider router={router} />
+    </PersistGate>
+  </Provider>
+);

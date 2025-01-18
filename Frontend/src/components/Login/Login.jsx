@@ -15,7 +15,6 @@ function Login() {
 
     const login = async(data) =>{
         setError("");
-        console.log(data);
         
         try {
             axios.post("/api/v1/hospitals/login", data, {
@@ -24,9 +23,8 @@ function Login() {
                 },
             })
             .then((response)=>{
-                if(response.status){
-                    dispatch(authLogin(data));
-                    console.log("User logged in Successfully!!");
+                if(response.data.success){
+                    dispatch(authLogin(response.data.data.hospital));
                     navigate('/admin');
                 }
                 else{
