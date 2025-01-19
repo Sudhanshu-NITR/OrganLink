@@ -70,8 +70,9 @@ const Settings = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
-  const hospital = useSelector((state) => state.auth.hospital);
+  const [hospital, setHospital] = useState(useSelector((state) => state.auth.hospital));
   const [imagePreview, setImagePreview] = useState(hospital.avatar);
+  const [imageFile, setImageFile] = useState(null);
   const { register, handleSubmit } = useForm({
     defaultValues: {
       name: hospital.name,
@@ -89,6 +90,7 @@ const Settings = () => {
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
+    setImageFile(file);
     if(file) {
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -101,7 +103,9 @@ const Settings = () => {
   const updateProfile = async (data) => {
     try {
       const response = await axios.patch("/api/v1/hospitals/update-profile", data);
-      console.log("Profile updated successfully:", response.data);
+      if(response.data.success){
+        setHospital(response.data.data);
+      }
     } catch (error) {
       console.log("Error updating profile details:", error);
     }
@@ -131,6 +135,30 @@ const Settings = () => {
       })
     } catch (error) {
       console.log("Error updating the password, ERROR: ", error);
+    }
+  }
+
+  const changeAvatar = async () => {
+    try {
+      const formData = new FormData();
+      formData.append('avatar', imageFile);
+  
+      const response = await axios.patch(
+        "/api/v1/hospitals/change-avatar", 
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data' 
+          }
+        }
+      );
+  
+      if(response.data.success){
+        console.log("Avatar updated successfully");
+        setHospital(response.data.data);
+      }
+    } catch (error) {
+      console.log("Error updating the avatar, ERROR: ", error);
     }
   }
 
@@ -169,6 +197,15 @@ const Settings = () => {
               <div className="flex-1">
                 <p className="text-sm font-medium text-gray-900">Upload new image</p>
                 <p className="text-xs text-gray-500 mt-1">JPG, PNG or GIF (Max. 2MB)</p>
+                <div className="pt-4">
+                  <button 
+                    type="submit"
+                    className="w-full sm:w-auto flex px-6 py-2.5 bg-orange-500 text-white text-sm font-semibold rounded-lg hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition duration-150 ease-in-out"
+                    onClick={changeAvatar}
+                  >
+                    Update Avatar
+                  </button>
+                </div>
               </div>
             </div>
           </div>

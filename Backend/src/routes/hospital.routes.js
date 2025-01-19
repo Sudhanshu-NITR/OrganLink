@@ -23,7 +23,7 @@ router.route("/refresh-token").post(refreshAcessToken);
 router.route("/change-password").patch(verifyJWT, changeCurrentPassword);
 router.route("/current-hospital").get(verifyJWT, getCurrentHospital);
 router.route("/update-profile").patch(verifyJWT, updateProfileDetails);
-router.route("/avatar").patch(verifyJWT, upload.single("avatar"), updateHospitalAvatar);
+router.route("/change-avatar").patch(verifyJWT, upload.single("avatar"), updateHospitalAvatar);
 router.route("/match-history").get(verifyJWT, getMatchesHistory);
 
 import recipientRouter from "./recipient.routes.js";

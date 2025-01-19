@@ -221,6 +221,16 @@ const refreshAcessToken = asyncHandler(async(req, res)=>{
 
 });
 
+const getCurrentHospital = asyncHandler(async(req, res)=>{
+    return res
+    .status(200)
+    .json(new ApiResponse(
+        200, 
+        req.hospital,
+        "current hospital fetched successfully"
+    ))
+});
+
 const changeCurrentPassword = asyncHandler(async(req, res)=>{
     const {currentPassword, newPassword} = req.body;
     const hospital = await Hospital.findById(req.hospital?._id);
@@ -241,16 +251,6 @@ const changeCurrentPassword = asyncHandler(async(req, res)=>{
         {},
         "Password changes successfully"
     ));
-});
-
-const getCurrentHospital = asyncHandler(async(req, res)=>{
-    return res
-    .status(200)
-    .json(new ApiResponse(
-        200, 
-        req.hospital,
-        "current hospital fetched successfully"
-    ))
 });
 
 const updateProfileDetails = asyncHandler(async(req, res)=>{
@@ -296,21 +296,21 @@ const updateHospitalAvatar = asyncHandler(async(req, res)=>{
         throw new ApiError(400, "Error while uploading avatar");
     }
 
-    const hospital = await Hospital.findByIdAndUpdate(
+    const updatedHospital = await Hospital.findByIdAndUpdate(
         req.hospital?._id,
-        {
-            $set: {
-                avatar: avatar.url,
-            }
-        },
-        {new: true}
-    ).select("-password")
+        { 
+            $set: { 
+                avatar: avatar.secure_url 
+            } 
+        }, 
+        { new: true }
+    );
 
     return res
     .status(200)
     .json(new ApiResponse(
         200,
-        hospital,
+        updatedHospital,
         "Avatar updated successfully"
     ));
 });
