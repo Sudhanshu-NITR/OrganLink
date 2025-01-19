@@ -37,7 +37,7 @@ const DonorForm = ({register, handleSubmit, reset}) => {
         {isOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
       </div>
       
-      <div className={`transition-[max-height,opacity] duration-500 ease-in-out overflow-hidden ${isOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
+      <div className={`transition-[max-height,opacity] rounded-b-lg duration-500 ease-in-out overflow-hidden ${isOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
         <form onSubmit={handleSubmit(addDonor)} className="space-y-5 p-8 font-medium bg-gray-50">
           <div className='flex space-x-4'>
             <Input 

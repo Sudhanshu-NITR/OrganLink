@@ -12,6 +12,7 @@ import {
   Settings,
   HelpCircle,
 } from "lucide-react";
+import './axiosConfig';
 
 function Container({ children }) {
   const navigate = useNavigate();

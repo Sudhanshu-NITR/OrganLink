@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useId } from 'react';
 import { Eye, EyeOff, Upload, Hospital, Phone, MapPin, Mail, User, Camera } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { login, logout } from '../../store/authSlice';
 import { useForm } from 'react-hook-form'
 import axios from 'axios';
-
 
 const SectionHeader = ({ title, subtitle }) => (
   <div className="mb-6">
@@ -13,8 +12,18 @@ const SectionHeader = ({ title, subtitle }) => (
   </div>
 );
 
-const Input = ({ icon: Icon, label, type = "text", defaultValue = "", ...props }) => {
+const Input = React.forwardRef(({ 
+  icon: Icon, 
+  label, 
+  type = "text", 
+  defaultValue = "",
+  name,
+  onChange,
+  onBlur,
+  ...props 
+}, ref) => {
   const [isFocused, setIsFocused] = useState(false);
+  const id = useId();
 
   const handleClick = (e) => {
     e.target.select();
@@ -22,7 +31,10 @@ const Input = ({ icon: Icon, label, type = "text", defaultValue = "", ...props }
 
   return (
     <div className="mb-4">
-      <label className="block text-sm font-medium text-gray-600 mb-2">
+      <label 
+        className="block text-sm font-medium text-gray-600 mb-2"
+        htmlFor={id}
+      >
         {label}
       </label>
       <div className="relative rounded-lg shadow-sm">
@@ -32,6 +44,9 @@ const Input = ({ icon: Icon, label, type = "text", defaultValue = "", ...props }
           </div>
         )}
         <input
+          id={id}
+          name={name}
+          ref={ref}
           type={type}
           className={`block w-full ${Icon ? 'pl-10' : 'pl-4'} pr-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 sm:text-sm transition duration-150 ease-in-out ${
             isFocused ? 'bg-white' : 'bg-blue-50'
@@ -39,25 +54,36 @@ const Input = ({ icon: Icon, label, type = "text", defaultValue = "", ...props }
           defaultValue={defaultValue}
           onClick={handleClick}
           onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
+          onBlur={(e) => {
+            setIsFocused(false);
+            onBlur && onBlur(e);
+          }}
+          onChange={onChange}
           {...props}
         />
       </div>
     </div>
   );
-};
+});
 
 const Settings = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   
-  const hospital = useSelector((state)=> state.auth.hospital);
+  const hospital = useSelector((state) => state.auth.hospital);
   const [imagePreview, setImagePreview] = useState(hospital.avatar);
-  const {register, handleSubmit, reset} = useForm();
+  const { register, handleSubmit } = useForm({
+    defaultValues: {
+      name: hospital.name,
+      address: hospital.address,
+      phone: hospital.phone,
+      email: hospital.email
+    }
+  });
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
+    if(file) {
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result);
@@ -66,22 +92,17 @@ const Settings = () => {
     }
   };
 
-  const updateProfile = async(data) =>{
+  const updateProfile = async (data) => {
     try {
-      axios.patch("/api/v1/hospitals/update-profile", data)
-      .then((response)=>{
-        console.log(response);
-      })
-      .catch((error)=>{
-        console.log("Error updating profile details, ERROR: ", error);
-      })
+      const response = await axios.patch("/api/v1/hospitals/update-profile", data);
+      console.log("Profile updated successfully:", response.data);
     } catch (error) {
-      console.log("Error updating profile details, ERROR: ", error);
+      console.log("Error updating profile details:", error);
     }
-  }
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 font-serif">
+    <div className="min-h-screen bg-[#fff4ec] py-8 font-serif">
       <div className="max-w-3xl mx-auto px-4 sm:px-6">
         <div className="pb-5 border-b border-gray-200">
           <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
@@ -89,7 +110,8 @@ const Settings = () => {
         </div>
 
         <div className="mt-8 space-y-6">
-          <div className="bg-white rounded-xl shadow-sm p-8 border border-gray-100">
+          {/* Profile Image Section */}
+          <div className="bg-gray-50 rounded-xl shadow-sm p-8 border border-gray-100">
             <SectionHeader 
               title="Profile Image" 
               subtitle="Update your hospital profile picture" 
@@ -117,65 +139,67 @@ const Settings = () => {
               </div>
             </div>
           </div>
-          <form onSubmit={handleSubmit(updateProfile)} className="bg-white rounded-xl shadow-sm p-8 border border-gray-100">
-              <SectionHeader 
-                title="Hospital Profile" 
-                subtitle="Update your hospital information" 
+
+          {/* Hospital Profile Section */}
+          <form onSubmit={handleSubmit(updateProfile)} className="bg-gray-50 rounded-xl shadow-sm p-8 border border-gray-100">
+            <SectionHeader 
+              title="Hospital Profile" 
+              subtitle="Update your hospital information" 
+            />
+            <div className="space-y-4">
+              <Input
+                icon={Hospital}
+                label="Hospital Name"
+                {...register("name", {
+                  required: "Hospital name is required"
+                })}
               />
-              <div className="space-y-4">
+              <Input
+                icon={MapPin}
+                label="Address"
+                {...register("address", {
+                  required: "Address is required"
+                })}
+              />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Input
-                  icon={Hospital}
-                  label="Hospital Name"
-                  defaultValue={hospital.name}
-                  {...register("name", {
-                    required: true,
+                  icon={Phone}
+                  label="Phone Number"
+                  type="tel"
+                  {...register("phone", {
+                    required: "Phone number is required",
+                    pattern: {
+                      value: /^\d{10}$/,
+                      message: "Phone number must be 10 digits"
+                    }
                   })}
                 />
                 <Input
-                  icon={MapPin}
-                  label="Address"
-                  defaultValue={hospital.address}
+                  icon={Mail}
+                  label="Email Address"
+                  type="email"
+                  {...register("email", {
+                    required: "Email is required",
+                    pattern: {
+                      value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                      message: "Please enter a valid email address"
+                    }
+                  })}
                 />
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Input
-                    icon={Phone}
-                    label="Phone Number"
-                    type="tel"
-                    defaultValue={hospital.phone}
-                    {...register("phone", {
-                      required:true,
-                      validate: {
-                        matchPattern: (value) => /^\d{10}$/.test(value) || "Phone number must be 10 digits"
-                      }
-                    })}
-                  />
-                  <Input
-                    icon={Mail}
-                    label="Email Address"
-                    type="email"
-                    defaultValue={hospital.email}
-                    {...register("email", {
-                        required:true,
-                        validate: {
-                          matchPattern: (value) => /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value) || "Email address must be a valid address"
-                        },
-                    })}
-                  />
-                </div>
-                <div className="pt-4">
-                  <button 
-                  className="w-full sm:w-auto px-6 py-2.5 bg-orange-500 text-white text-sm font-semibold rounded-lg hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition duration-150 ease-in-out"
-                  type="submit"
-                  >
-                    Save Changes
-                  </button>
-                </div>
               </div>
+              <div className="pt-4">
+                <button 
+                  type="submit"
+                  className="w-full sm:w-auto flex px-6 py-2.5 bg-orange-500 text-white text-sm font-semibold rounded-lg hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition duration-150 ease-in-out"
+                >
+                  Update Profile
+                </button>
+              </div>
+            </div>
           </form>
-          
 
-          {/* Password Section */}
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+          <div className="bg-gray-50 rounded-xl shadow-sm p-8 border border-gray-100">
+            {/* Password Section  */}
             <SectionHeader 
               title="Password" 
               subtitle="Update your account password" 
@@ -189,6 +213,7 @@ const Settings = () => {
                   <input
                     type={showPassword ? "text" : "password"}
                     className="block w-full pl-4 pr-10 py-2.5 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                    
                     onClick={(e) => e.target.select()}
                   />
                   <button
@@ -204,6 +229,7 @@ const Settings = () => {
                   </button>
                 </div>
               </div>
+
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-600 mb-2">
                   New Password

@@ -78,8 +78,6 @@ const MatchHistory = () => {
         .then((response) => {
           if (response.data.success) {
             setDonorHistory(response.data.data.donors);
-            console.log(response.data.data.donors);
-            
             setRecipientHistory(response.data.data.recipients);
           }
         })

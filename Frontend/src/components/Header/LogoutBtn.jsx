@@ -7,10 +7,9 @@ function LogoutBtn() {
     const dispatch = useDispatch();
     const logoutHandler = () =>{
         try {
-            
             axios.get("/api/v1/hospitals/logout")
             .then((response)=>{
-                if(response.status){
+                if(response.data.success){
                     console.log("User logged out Successfully!!");
                     dispatch(logout());
                     navigate("/");

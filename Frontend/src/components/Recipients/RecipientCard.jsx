@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Trash2, ChevronDown, ChevronUp, Building2, Phone, MapPin } from 'lucide-react';
+import axios from 'axios'
 
 const RecipientCard = ({ recipient, recipientList, setRecipientList }) => {
   const [showHospital, setShowHospital] = useState(false);
@@ -81,9 +82,9 @@ const RecipientCard = ({ recipient, recipientList, setRecipientList }) => {
 
             </div>
         </div>
-        {/* Collapsible Hospital Info */}
-        {showHospital && (
-            <div className="mt-3 p-4 w-full bg-white rounded-lg shadow-sm space-y-2 text-sm">
+
+        <div className={`mt-3 w-full bg-white rounded-lg transition-all duration-300 ease-in-out  ${showHospital? "opacity-100 max-h-96":"opacity-0 max-h-0 overflow-hidden"}`}>
+            <div className='p-4 shadow-sm'>
                 <div className="flex items-center space-x-2 text-gray-700">
                     <Building2 className="w-4 h-4" />
                     <span>{recipient.hospital?.name || "Hospital Name"}</span>
@@ -97,7 +98,7 @@ const RecipientCard = ({ recipient, recipientList, setRecipientList }) => {
                     <span>{recipient.hospital?.address || "Hospital Address"}</span>
                 </div>
             </div>
-        )}
+        </div>
     </div>
   );
 };

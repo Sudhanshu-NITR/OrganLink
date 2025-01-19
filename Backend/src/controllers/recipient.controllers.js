@@ -42,7 +42,6 @@ const sendRequest = asyncHandler(async(req, res)=>{
         },
         { new: true }
     );
-    // console.log(recipient);
     
 
     if(!recipient || !request){
@@ -174,9 +173,21 @@ const deleteRecipient = asyncHandler(async(req, res)=>{
 
     const recipient = await Recipient.findByIdAndDelete(id).select("-password");
 
-    if(!donor){
+    if(!recipient){
         throw new ApiError(500, "Something went wrong while deleting the recipient")
     }
+
+    const donor = await Donor.findByIdAndUpdate(
+        recipient.donor,
+        {
+            $pull: {
+                requests: {
+                    recipient: recipient._id,
+                }
+            }
+        },
+        { new: true }
+    )
 
     return res
     .status(200)

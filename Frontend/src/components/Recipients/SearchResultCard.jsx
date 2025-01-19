@@ -28,9 +28,9 @@ const SearchResultCard = ({ donor }) => {
                 </div>
             </div>
 
-            {isFormOpen && (
+            <div className={`transition-all duration-500 ease-in-out ${isFormOpen? "opacity-100 max-h-[500px]":"opacity-0 max-h-0"}`}>
                 <RecipientForm isFormOpen={isFormOpen} setIsFormOpen={setIsFormOpen} donor_id={donor._id}/>
-            )}
+            </div>
         </div>
     );
 };
