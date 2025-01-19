@@ -38,7 +38,7 @@ const RecipientCard = ({ recipient, recipientList, setRecipientList }) => {
 
             <div className="flex flex-col justify-between h-full space-y-2">
                 <div className={`flex items-center space-x-2 ${
-                    recipient.status === 'unmatched' ? 'text-red-600' : 'text-green-600'
+                    ((recipient.status === 'unmatched')||(recipient.status === 'rejected')) ? 'text-red-600' : 'text-green-600'
                     }`}>
                     <span>Status: {recipient.status}</span>
                     {recipient.status === 'unmatched' ? (

@@ -37,7 +37,7 @@ const recipientSchema = new Schema(
         status: {
             type: String,
             required: true,
-            enum: ['matched', 'unmatched'],
+            enum: ['matched', 'unmatched', 'rejected'],
             default: 'unmatched',
         },
         donor: {

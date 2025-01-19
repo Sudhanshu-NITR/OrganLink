@@ -118,7 +118,7 @@ function RequestItem({
 
     const handleAccept = () => {
         try {
-            axios.patch(`/api/v1/hospitals/donor/accept-request`,{
+            axios.patch(`/api/v1/hospitals/donor/accept-request`, {
               recipient_id,
               donor_id,
             })
@@ -136,14 +136,15 @@ function RequestItem({
 
     const handleReject = () => {
         try {
-            axios.patch(`/api/v1/hospitals/donor/reject-request/${id}`,{
-                status:"Rejected",
+            axios.patch(`/api/v1/hospitals/donor/reject-request`, {
+                donor_id,
+                recipient_id,
             })
             .then((response)=>{
-              if(response.data.success){
-                  console.log("Request rejected");
-                  setRequestStatus("Rejected");
-              }
+                if(response.data.success){
+                    console.log("Request rejected");
+                    setRequestStatus("Rejected");
+                }
             })
         } catch (error) {
             console.log("Error while accepting request, Error: ", error);
@@ -159,7 +160,7 @@ function RequestItem({
             <div className="flex items-center gap-4">
                 <div className="text-right">
                     <p className="text-sm text-gray-600">{date}</p>
-                    <p className={`text-sm font-medium ${statusColor}`}>{status}</p>
+                    <p className={`text-sm font-medium ${statusColor}`}>{requestStatus}</p>
                 </div>
                 {
                     requestStatus=="Pending" && 

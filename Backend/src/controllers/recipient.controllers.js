@@ -7,15 +7,14 @@ import { ApiResponse } from '../utils/ApiResponse.js';
 const sendRequest = asyncHandler(async(req, res)=>{
     const {fullName, age, bloodType, organNeeded, phone, email, donor_id} = req.body;
     const hospital = req.hospital._id
-    console.log(req);
     
     if(
         [fullName, age, bloodType, organNeeded, phone, email, donor_id].some((field) => field?.trim() ==="")
     ){
         throw new ApiError(400, "All fields are required");
     }
-    const existingRequest = await Donor.findOne({
-        $and: [{fullName, organNeeded}]
+    const existingRequest = await Recipient.findOne({
+        $and: [{fullName}, {organNeeded}, {donor_id}]
     });
 
     if(existingRequest){

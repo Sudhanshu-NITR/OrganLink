@@ -115,7 +115,7 @@ const acceptRequest = asyncHandler(async(req, res)=>{
         throw new ApiError(400, "Match already exists or organ already donated!!")
     }
     
-    const updatedRequests = donor.requests.map(request => ({
+    const updatedRequests = await donor.requests.map((request) => ({
         ...request.toObject(),
         status: request.recipient.toString() === recipient_id.toString() 
             ? "Accepted" 
@@ -173,23 +173,33 @@ const acceptRequest = asyncHandler(async(req, res)=>{
 
 const rejectRequest = asyncHandler(async(req, res)=>{
     const {donor_id, recipient_id} = req.body;
-
-    if(!donor_id || recipient_id){  
-        throw new ApiError(400, "donor id and recipient id was not passed");
+    
+    if(!donor_id || !recipient_id){  
+        throw new ApiError(400, "donor id or recipient id was not passed");
     }
 
     const donor = await Donor.findByIdAndUpdate(
-        { 
-            _id: donor_id, // first this
-            "requests.recipient": recipient_id // then this
-        },
+        donor_id,
         {
             $set: {
-                "requests.$.status": "Accepted",  // $ matches the array index found in the query
+                "requests.$[elem].status": "Rejected",  // $ matches the array index found in the query
+            }
+        },
+        { 
+            new: true ,
+            arrayFilters: [{ "elem.recipient": recipient_id }]
+        }
+    ).select("-password")
+
+    const recipient = await Recipient.findByIdAndUpdate(
+        recipient_id,
+        {
+            $set: {
+                status: "rejected"
             }
         },
         { new: true }
-    ).select("-password")
+    )
 
     if(!donor){
         throw new ApiError(409, "Error while updating donor reject request!!")
