@@ -41,11 +41,17 @@ const RecipientCard = ({ recipient, recipientList, setRecipientList }) => {
                     ((recipient.status === 'unmatched')||(recipient.status === 'rejected')) ? 'text-red-600' : 'text-green-600'
                     }`}>
                     <span>Status: {recipient.status}</span>
-                    {recipient.status === 'unmatched' ? (
+                    {recipient.status === 'unmatched' && (
                     <svg className="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
-                    ): (<span className="text-2xl font-extrabold text-green-600">✓</span>)}
+                    )}
+                    {recipient.status === 'matched' && (
+                        <span className="text-2xl font-extrabold text-green-600">✓</span>
+                    )}
+                    {recipient.status === 'rejected' && (
+                        <span className="text-2xl font-extrabold text-red-600">×</span>
+                    )}
                 </div>
                 {/* <span className={`px-3 py-1 rounded-full text-sm ${
                     recipient.urgency === 'High' ? 'bg-red-100 text-red-800' :

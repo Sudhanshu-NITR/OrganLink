@@ -69,7 +69,7 @@ const Input = React.forwardRef(({
 const Settings = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
-  
+  const [showNotification, setShowNotification] = useState(false);
   const hospital = useSelector((state) => state.auth.hospital);
   const [imagePreview, setImagePreview] = useState(hospital.avatar);
   const { register, handleSubmit } = useForm({
@@ -80,6 +80,12 @@ const Settings = () => {
       email: hospital.email
     }
   });
+  const [password, setPassword] = useState(
+    {
+      newPassword: '',
+      currentPassword: ''
+    }
+  )
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -100,6 +106,33 @@ const Settings = () => {
       console.log("Error updating profile details:", error);
     }
   };
+
+  const handlePasswordChange = (e)=>{
+    const {name, value} = e.target;
+    setPassword((prev)=>({
+      ...prev,
+      [name]: value
+    }))
+  }
+
+  const changePassword = async()=>{
+    try {
+      await axios.patch("/api/v1/hospitals/change-password", password)
+      .then((response)=>{
+        if(response.data.success){
+          setShowNotification(true);
+          setTimeout(() => {
+            setShowNotification(false);
+          }, 3000);
+        }
+      })
+      .catch((error)=>{
+        console.log("Error updating the password, ERROR: ", error);
+      })
+    } catch (error) {
+      console.log("Error updating the password, ERROR: ", error);
+    }
+  }
 
   return (
     <div className="min-h-screen bg-[#fff4ec] py-8 font-serif">
@@ -213,7 +246,9 @@ const Settings = () => {
                   <input
                     type={showPassword ? "text" : "password"}
                     className="block w-full pl-4 pr-10 py-2.5 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
-                    
+                    value={password.currentPassword}
+                    name='currentPassword'
+                    onChange={handlePasswordChange}
                     onClick={(e) => e.target.select()}
                   />
                   <button
@@ -238,6 +273,9 @@ const Settings = () => {
                   <input
                     type={showNewPassword ? "text" : "password"}
                     className="block w-full pl-4 pr-10 py-2.5 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                    name='newPassword'
+                    value={password.newPassword}
+                    onChange={handlePasswordChange}
                     onClick={(e) => e.target.select()}
                   />
                   <button
@@ -254,9 +292,31 @@ const Settings = () => {
                 </div>
               </div>
               <div className="pt-4">
-                <button className="w-full sm:w-auto px-6 py-2.5 bg-orange-500 text-white text-sm font-semibold rounded-lg hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition duration-150 ease-in-out">
+                <button 
+                className="w-full sm:w-auto px-6 py-2.5 bg-orange-500 text-white text-sm font-semibold rounded-lg hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition duration-150 ease-in-out"
+                onClick={changePassword}
+                >
                   Update Password
                 </button>
+
+                {showNotification && (
+                  <div className="fixed bottom-5 right-5 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center space-x-2 transform transition-all duration-300 ease-out">
+                    <svg 
+                      className="w-6 h-6" 
+                      fill="none" 
+                      stroke="currentColor" 
+                      viewBox="0 0 24 24"
+                    >
+                      <path 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round" 
+                        strokeWidth="2" 
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    <span>Password updated successfully!</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>

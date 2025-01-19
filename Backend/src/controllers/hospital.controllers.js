@@ -4,7 +4,6 @@ import { Hospital } from '../models/hospital.models.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import {uploadOnCloudinary} from "../utils/cloudinary.js"
 import jwt from "jsonwebtoken"
-import { log } from 'console';
 
 
 const generateRefreshAndAccessToken = async(hospitalId)=>{
@@ -222,17 +221,18 @@ const refreshAcessToken = asyncHandler(async(req, res)=>{
 
 });
 
-const changeCurrentPassword = asyncHandler(async(Request, res)=>{
-    const {oldPassword, newPassword} = req.body;
-    const hospital = Hospital.findById(req.hospital?._id);
-    const isPasswordCorrect = await hospital.isPasswordCorrect(oldPassword);
+const changeCurrentPassword = asyncHandler(async(req, res)=>{
+    const {currentPassword, newPassword} = req.body;
+    const hospital = await Hospital.findById(req.hospital?._id);
+    
+    const isPasswordCorrect = await hospital.isPasswordCorrect(currentPassword);
 
     if(!isPasswordCorrect){
         throw new ApiError(400, "Invalid old password");
     }
 
     hospital.password = newPassword;
-    await user.save({validateBeforeSave: false});
+    await hospital.save({validateBeforeSave: false});
 
     return res
     .status(200)

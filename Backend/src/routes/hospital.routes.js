@@ -20,7 +20,7 @@ router.route("/register").post(
 router.route("/login").post(loginHospital);
 router.route("/logout").get(verifyJWT, logoutHospital);
 router.route("/refresh-token").post(refreshAcessToken);
-router.route("/change-password").post(verifyJWT, changeCurrentPassword);
+router.route("/change-password").patch(verifyJWT, changeCurrentPassword);
 router.route("/current-hospital").get(verifyJWT, getCurrentHospital);
 router.route("/update-profile").patch(verifyJWT, updateProfileDetails);
 router.route("/avatar").patch(verifyJWT, upload.single("avatar"), updateHospitalAvatar);
