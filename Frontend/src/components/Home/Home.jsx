@@ -4,6 +4,8 @@ import { Link } from 'react-scroll'
 import "./Home.css"
 import { motion } from 'framer-motion'
 import { ChevronDown, Heart, Hospital, Users, Phone, Mail, ArrowRight } from 'lucide-react'
+import { useSelector } from 'react-redux'
+import FAQSection from './FAQs'
 
 function Home() {
     const location = useLocation();
@@ -17,6 +19,8 @@ function Home() {
             }
         }
     }, [location]);
+
+    const authStatus = useSelector((state)=> state.auth.status);
 
     
     return (
@@ -65,7 +69,7 @@ function Home() {
             </div>
 
             {/* Navigation */}
-            {/* <div className={`sticky top-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-white shadow-lg' : 'bg-transparent'}`}>
+            <div className={`sticky top-0 z-50 transition-all duration-300 bg-white shadow-lg`}>
                 <div className="max-w-7xl mx-auto px-4">
                     <div className="flex justify-center space-x-12 py-6">
                         {['home', 'about', 'help'].map((section) => (
@@ -74,16 +78,14 @@ function Home() {
                                 to={section}
                                 smooth={true}
                                 duration={500}
-                                className={`cursor-pointer font-serif text-lg capitalize transition-colors duration-300 hover:text-[#646c3c] ${
-                                    isScrolled ? 'text-[#da7224]' : 'text-white'
-                                }`}
+                                className={`cursor-pointer font-serif text-lg capitalize transition-colors duration-300 hover:text-[#646c3c] text-[#da7224]`}
                             >
                                 {section}
                             </Link>
                         ))}
                     </div>
                 </div>
-            </div> */}
+            </div>
 
             {/* Stats Section */}
             <div id="stats" className='py-20 bg-gradient-to-b from-[#fff4ec] to-white'>
@@ -92,7 +94,7 @@ function Home() {
                         {[
                             { icon: <Heart className="text-[#da7224]" size={32} />, number: "1000+", text: "Lives Saved" },
                             { icon: <Hospital className="text-[#da7224]" size={32} />, number: "250+", text: "Hospitals Connected" },
-                            { icon: <Users className="text-[#da7224]" size={32} />, number: "500+", text: "Active Donors" }
+                            { icon: <Users className="text-[#da7224]" size={32} />, number: "800+", text: "Active Donors" }
                         ].map((stat, index) => (
                             <motion.div
                                 key={index}
@@ -171,6 +173,8 @@ function Home() {
                 </div>
             </div>
 
+            <FAQSection />
+
             {/* Help Section */}
             <div id="help" className="py-20 bg-[#fff4ec]">
                 <div className="max-w-7xl mx-auto px-4">
@@ -189,14 +193,14 @@ function Home() {
                             {
                                 title: "For Hospitals",
                                 items: ["Register your facility", "Update organ availability", "Access donor matching system", "View transfer protocols"],
-                                link: "/hospital/register",
+                                link: "/register",
                                 linkText: "Hospital Registration"
                             },
                             {
                                 title: "For Donors",
                                 items: ["Register as a donor", "Learn about donation process", "Update medical information", "Contact support team"],
-                                link: "/register",
-                                linkText: "Become a Donor"
+                                link: authStatus ? "/donors":"/login",
+                                linkText: "Add a Donor"
                             },
                             {
                                 title: "FAQ & Support",

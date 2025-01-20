@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { login, logout } from "./store/authSlice.js";
@@ -14,54 +14,91 @@ import {
 } from "lucide-react";
 import './axiosConfig';
 
-function Container({ children }) {
+const Container = ({ children }) => {
   const navigate = useNavigate();
-  let authStatus = useSelector((state) => state.auth.status);
+  const authStatus = useSelector((state) => state.auth.status);
   const dispatch = useDispatch();
+  const [activeIndex, setActiveIndex] = useState(0);
+  
+  const items = [
+    {
+      text: 'Dashboard',
+      icon: <LayoutDashboard size={20} />,
+      link: "/admin",
+    }, 
+    {
+      text: 'Donors',
+      icon: <HeartHandshake size={20} />,
+      link: "/donors",
+    }, 
+    {
+      text: 'Recipients',
+      icon: <Users size={20} />,
+      link: "/recipients"
+    }, 
+    {
+      text: 'Match History',
+      icon: <History size={20} />,
+      link: "/match-history"
+    }, 
+    {
+      text: 'Settings',
+      icon: <Settings size={20} />,
+      link: "/settings"
+    }, 
+    {
+      text: 'Help',
+      icon: <HelpCircle size={20} />,
+      link: "/#help"
+    }
+  ];
 
   useEffect(() => {
     const checkAuth = async () => {
       try {
         const response = await axios.get("/api/v1/hospitals/current-hospital");
         if (response.data.success) {
-            const hospital = response.data.data;
-            dispatch(login(hospital));
+          dispatch(login(response.data.data));
         } else {
-            dispatch(logout());
-            navigate("/login");
-        }
-      } catch (error) {
-          console.error("Authentication error:", error);
           dispatch(logout());
           navigate("/login");
+        }
+      } catch (error) {
+        console.error("Authentication error:", error);
+        dispatch(logout());
+        navigate("/login");
       }
     };
 
     if (!authStatus) {
-        checkAuth();
+      checkAuth();
     }
   }, [dispatch, navigate, authStatus]);
 
   return (
-    <div className="w-full h-full flex">
-        <div className="fixed z-20">
-            {authStatus && (
-              <Sidebar>
-                <SidebarItem icon={<LayoutDashboard size={20} />} text="Dashboard" link="/admin"/>
-                <SidebarItem icon={<HeartHandshake size={20} />} text="Donors" link="/donors"/>
-                <SidebarItem icon={<Users size={20} />} text="Recipient" link="/recipients"/>
-                <SidebarItem icon={<History size={20} />} text="Match History" link={"/match-history"}/>
-                <hr className="my-3" />
-                <SidebarItem icon={<Settings size={20} />} text="Settings" link={"/settings"} />
-                <SidebarItem icon={<HelpCircle size={20} />} text="Help" />
-              </Sidebar>
-            )}
+    <div className="flex h-screen w-full overflow-hidden">
+      {authStatus && (
+        <div className="fixed left-0 top-0 h-full z-20">
+          <Sidebar>
+            {items.map((item, index) => (
+              <div onClick={() => setActiveIndex(index)}>
+                <SidebarItem 
+                  key={index}
+                  icon={item.icon} 
+                  text={item.text}
+                  link={item.link}
+                  active={activeIndex === index}
+                />
+              </div>
+            ))}
+          </Sidebar>
         </div>
-        <div className={`z-0 flex-1 overflow-auto ${authStatus? "ml-[4.29rem]" : "ml-0"}`}>
-            {children}
-        </div>
+      )}
+      <main className={`flex-1 overflow-auto ${authStatus ? "ml-[4.29rem]" : ""}`}>
+        {children}
+      </main>
     </div>
   );
-}
+};
 
 export default Container;
