@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Building2, Users, HandshakeIcon } from 'lucide-react';
 import { NavLink } from 'react-router-dom'
+import axios from 'axios';
 
 const StatCard = ({ icon: Icon, title, count, iconBackground }) => (
   <div className="bg-white rounded-lg p-6 flex items-center space-x-4 shadow-sm">
@@ -15,12 +16,33 @@ const StatCard = ({ icon: Icon, title, count, iconBackground }) => (
 );
 
 const Dashboard = () => {
-  // Sample data - replace with actual data
-  const stats = {
-    donations: 156,
-    recipients: 243,
-    matches: 89
-  };
+  const [stats, setStats] = useState({
+    donations: 0,
+    recipients: 0,
+    matches: 0
+  });
+
+  useEffect(()=>{
+    (async()=>{
+      try {
+        await axios.get("/api/v1/hospitals/get-stats")
+        .then((response)=>{
+          if(response.data.success){
+            setStats({
+              donations: response.data.data.donationCount,
+              recipients: response.data.data.receiverCount,
+              matches: response.data.data.matchCount,
+            })
+          }
+        })
+        .catch((error)=>{
+          console.log("Error fetching Hospital Stats, ERROR: ", error);
+        })
+      } catch (error) {
+        console.log("Error fetching Hospital Stats, ERROR: ", error);
+      }
+    })();
+  }, []);
 
   return (
     <div className="p-6 max-w-7xl mx-auto">

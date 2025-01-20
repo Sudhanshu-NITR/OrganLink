@@ -4,6 +4,9 @@ import { Hospital } from '../models/hospital.models.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import {uploadOnCloudinary} from "../utils/cloudinary.js"
 import jwt from "jsonwebtoken"
+import { Recipient } from '../models/recipient.models.js';
+import { Donor } from '../models/donor.models.js';
+import { Match } from '../models/match.models.js';
 
 
 const generateRefreshAndAccessToken = async(hospitalId)=>{
@@ -315,6 +318,36 @@ const updateHospitalAvatar = asyncHandler(async(req, res)=>{
     ));
 });
 
+const getStats = asyncHandler(async(req, res)=>{
+    const hospital = req.hospital;
+    const donationCount =  await Donor.countDocuments({hospital: hospital._id});
+    const receiverCount =  await Recipient.countDocuments({hospital: hospital._id});
+    const matchCount = await Match.countDocuments({
+        $or: [
+            {recipientHospital: hospital._id},
+            {donorHospital: hospital._id}
+        ]
+    })
+
+    if(donationCount==null || receiverCount==null || matchCount==null){
+        throw new ApiError(409, "Failed to fetch data from database!!"); 
+    }
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            {
+                donationCount,
+                receiverCount,
+                matchCount,
+            },
+            "Dashboard data successfully fetched"
+        )
+    )
+});
+
 export {
     registerHospital, 
     loginHospital, 
@@ -324,4 +357,5 @@ export {
     getCurrentHospital,
     updateProfileDetails,
     updateHospitalAvatar,
+    getStats
 };

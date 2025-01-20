@@ -7,7 +7,6 @@ import { motion } from 'framer-motion'
 import { ChevronDown, Heart, Hospital, Users, Phone, Mail, ArrowRight } from 'lucide-react'
 
 function Home() {
-    const userData = useSelector((state)=> state.auth.userData);
     const [isScrolled, setIsScrolled] = useState(false);
 
     useEffect(() => {
