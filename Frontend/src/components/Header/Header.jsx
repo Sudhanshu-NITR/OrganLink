@@ -1,14 +1,19 @@
 import React from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
-import { Link }  from 'react-scroll'
 import LogoutBtn from './LogoutBtn.jsx'
 import "./Header.css"
 import { useSelector } from 'react-redux'
 
-
 function Header() {
     const authStatus = useSelector((state)=> state.auth.status);
-    const navigate = useNavigate()
+    const navigate = useNavigate();
+
+    const scrollToElement = (elementId)=>{
+        const element = document.getElementById(elementId)
+        if(element){
+            element.scrollIntoView({behavior: 'smooth'});
+        }
+    };
 
     const navItems = [
         {
@@ -42,7 +47,7 @@ function Header() {
                 <nav className="flex text-lg font-medium items-center flex-wrap space-x-4">
                     {
                         navItems.map((item, index)=>(
-                            <Link to={item.slug}
+                            <NavLink to={`/#${item.slug}`}
                             key = {index}
                             className=" hover:border-white hover:rounded-[2rem] hover:border-[1.2px] duration-200 h-[7vh] w-[7vw] flex justify-center items-center hover:shadow-lg cursor-pointer"    
                             activeClass="font-bold"
@@ -52,7 +57,7 @@ function Header() {
                             duration={500} 
                             >
                                 {item.name}
-                            </Link>
+                            </NavLink>
                         ))
                     }
                     {!authStatus && (
@@ -78,7 +83,7 @@ function Header() {
                     )}
                 </nav>
             </header>
-            
+
         </>
     )
 }

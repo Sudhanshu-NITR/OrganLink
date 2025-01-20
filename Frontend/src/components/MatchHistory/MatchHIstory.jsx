@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Calendar, User, Heart, Activity } from 'lucide-react';
 import axios from 'axios';
+import { format } from 'date-fns'
 
 const Card = ({ children, className = '' }) => (
   <div className={`bg-white rounded-lg shadow-sm border border-gray-200 ${className}`}>
@@ -44,7 +45,7 @@ const HistoryTable = ({ data, type }) => (
           <Td>
             <div className="flex items-center gap-2">
               <Calendar className="w-4 h-4 text-orange-500" />
-              {new Date(match.createdAt).toLocaleDateString()}
+              {match.createdAt ? format(new Date(match.createdAt), 'dd/MM/yyyy') : 'N/A'}
             </div>
           </Td>
           <Td>

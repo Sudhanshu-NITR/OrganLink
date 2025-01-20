@@ -1,26 +1,23 @@
-import React, { useState, useEffect } from 'react'
-import { NavLink } from 'react-router-dom'
+import React, { useEffect } from 'react'
+import { NavLink, useLocation } from 'react-router-dom'
 import { Link } from 'react-scroll'
 import "./Home.css"
-import { useSelector } from 'react-redux'
 import { motion } from 'framer-motion'
 import { ChevronDown, Heart, Hospital, Users, Phone, Mail, ArrowRight } from 'lucide-react'
 
 function Home() {
-    const [isScrolled, setIsScrolled] = useState(false);
+    const location = useLocation();
 
-    useEffect(() => {
-        const handleScroll = () => {
-            if (window.scrollY > 100) {
-                setIsScrolled(true);
-            } else {
-                setIsScrolled(false);
+    useEffect(()=>{
+        if(location.hash){
+            const elementId = location.hash.replace('#', '');
+            const element = document.getElementById(elementId);
+            if(element){
+                element.scrollIntoView({behavior: 'smooth'})
             }
-        };
+        }
+    }, [location]);
 
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
     
     return (
         <div className="w-full overflow-hidden">
@@ -68,7 +65,7 @@ function Home() {
             </div>
 
             {/* Navigation */}
-            <div className={`sticky top-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-white shadow-lg' : 'bg-transparent'}`}>
+            {/* <div className={`sticky top-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-white shadow-lg' : 'bg-transparent'}`}>
                 <div className="max-w-7xl mx-auto px-4">
                     <div className="flex justify-center space-x-12 py-6">
                         {['home', 'about', 'help'].map((section) => (
@@ -86,7 +83,7 @@ function Home() {
                         ))}
                     </div>
                 </div>
-            </div>
+            </div> */}
 
             {/* Stats Section */}
             <div id="stats" className='py-20 bg-gradient-to-b from-[#fff4ec] to-white'>

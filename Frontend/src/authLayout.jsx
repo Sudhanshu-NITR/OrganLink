@@ -11,7 +11,10 @@ export default function Protected({children, request, authentication}){
     useEffect(()=>{
         if (authStatus === undefined) return;
         
-        if(authentication && authStatus!==authentication){
+        if(!authentication){
+            navigate(request);
+        }
+        else if(authentication && authStatus!==authentication){
             navigate("/login");
         }
         else if(!authentication && authStatus!==authentication){

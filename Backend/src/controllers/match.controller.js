@@ -46,12 +46,6 @@ const getMatchesHistory = asyncHandler(async(req, res)=>{
                     $first: "$recipientDetails"
                 }
             }
-        },
-        {
-            $project: {
-                donorDetails: 1,
-                recipientDetails: 1
-            }
         }
     ]);
 
@@ -89,12 +83,6 @@ const getMatchesHistory = asyncHandler(async(req, res)=>{
                 donorDetails: {
                     $first: "$donorDetails"
                 }
-            }
-        },
-        {
-            $project: {
-                donorDetails: 1,
-                recipientDetails: 1
             }
         }
     ])
