@@ -10,7 +10,7 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { store, persistor } from './store/store.js';
 import Login from './components/Login/Login.jsx';
 import Admin from './components/Admin/Admin.jsx';
-import AuthLayout from './AuthLayout.jsx';
+import AuthLayout from './components/AuthLayout.jsx';
 import Container from './Container.jsx';
 import Donors from './components/Donors/Donors.jsx';
 import Recipients from './components/Recipients/Recipients.jsx';
