@@ -1,24 +1,23 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
-import { Link } from 'react-scroll'
-
+import { Link } from 'react-router-dom'
 
 
 function Footer() {
     const footerItems1 = [
         {
             name: "Home",
-            slug: "home",
+            slug: "/#home",
             active: true,
         },
         {
             name: "About Us",
-            slug: "about",
+            slug: "/#about",
             active: true,
         },
         {
             name: "Help",
-            slug: "help",
+            slug: "/#help",
             active: true,
         },
         {
@@ -30,7 +29,7 @@ function Footer() {
     const footerItems2 = [
         {
             name: "FAQs",
-            slug: "/faq",
+            slug: "/#FAQs",
             active: true
         },
         {

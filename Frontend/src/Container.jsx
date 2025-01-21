@@ -66,7 +66,7 @@ const Container = ({ children }) => {
       } catch (error) {
         console.error("Authentication error:", error);
         dispatch(logout());
-        navigate("/login");
+        navigate("/");
       }
     };
 

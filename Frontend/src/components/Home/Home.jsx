@@ -205,8 +205,8 @@ function Home() {
                             {
                                 title: "FAQ & Support",
                                 items: ["Common questions", "Technical support", "Emergency contacts", "Resource library"],
-                                link: "/support",
-                                linkText: "Get Help"
+                                link: "#FAQs",
+                                linkText: "FAQs"
                             }
                         ].map((section, index) => (
                             <motion.div
