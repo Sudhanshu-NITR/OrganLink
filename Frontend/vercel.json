@@ -3,12 +3,10 @@
     {
       "source": "/api/:path*",
       "destination": "https://organlink.onrender.com/:path*"
-    }
-  ],
-  "routes": [
+    },
     {
-      "src": "/(.*)",
-      "dest": "/index.html"
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
