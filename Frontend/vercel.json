@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://organlink.onrender.com/:path*"
+      "destination": "https://organlink.onrender.com/api/:path*"
     },
     {
       "source": "/(.*)",
