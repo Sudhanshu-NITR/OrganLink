@@ -78,8 +78,8 @@ const Recipient = () => {
                             <option value="Liver">Liver</option>
                             <option value="Heart">Heart</option>
                             <option value="Lungs">Lungs</option>
-                            <option value="Lungs">Eyes</option>
-                            <option value="Lungs">Pancreas</option>
+                            <option value="Eyes">Eyes</option>
+                            <option value="Pancreas">Pancreas</option>
                         </select>
                     </div>
 
