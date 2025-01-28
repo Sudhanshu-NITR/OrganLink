@@ -73,15 +73,15 @@ function Home() {
                 <div className="max-w-7xl mx-auto px-4">
                     <div className="flex justify-center space-x-12 py-6">
                         {['home', 'about', 'help'].map((section) => (
-                            <Link
+                            <NavLink
                                 key={section}
-                                to={section}
+                                to={`/#${section}`}
                                 smooth={true}
                                 duration={500}
                                 className={`cursor-pointer font-serif text-lg capitalize transition-colors duration-300 hover:text-[#646c3c] text-[#da7224]`}
                             >
                                 {section}
-                            </Link>
+                            </NavLink>
                         ))}
                     </div>
                 </div>
