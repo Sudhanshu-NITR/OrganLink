@@ -1,8 +1,30 @@
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import cors from "cors";
+import axios from 'axios';
 
 const app = express();
+
+const url = `https://organlink.onrender.com`;
+const interval = 30000;
+
+function reloadWebsite() {
+    axios.get(url)
+    .then((response) => {
+      console.log("website reloded");
+    })
+    .catch((error) => {
+      console.error(`Error : ${error.message}`);
+    });
+}
+
+setInterval(reloadWebsite, interval);
+
+
+app.get("/", (req, res)=>{
+    res.send("Hello & Welcome to OrganLink!!");
+});
+
 
 app.use(cors({
     origin: process.env.CORS_ORIGIN,
