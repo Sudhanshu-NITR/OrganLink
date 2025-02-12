@@ -44,6 +44,13 @@ const recipientSchema = new Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Donor',
             required: true
+        },
+        donorHospital:{
+            type: {
+                name: String,
+                address: String,
+                phone: String,
+            },
         }
     },
     {timestamps: true}

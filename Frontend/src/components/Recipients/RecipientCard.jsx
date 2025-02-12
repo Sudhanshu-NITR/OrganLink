@@ -93,15 +93,15 @@ const RecipientCard = ({ recipient, recipientList, setRecipientList }) => {
             <div className='p-4 shadow-sm'>
                 <div className="flex items-center space-x-2 text-gray-700">
                     <Building2 className="w-4 h-4" />
-                    <span>{recipient.hospital?.name || "Hospital Name"}</span>
+                    <span>Hospital Name: {recipient.donorHospital?.name || "N/A"}</span>
                 </div>
                 <div className="flex items-center space-x-2 text-gray-700">
                     <Phone className="w-4 h-4" />
-                    <span>{recipient.hospital?.contact || "Contact Number"}</span>
+                    <span>Contact Number: {recipient.donorHospital?.phone || "N/A"}</span>
                 </div>
                 <div className="flex items-center space-x-2 text-gray-700">
                     <MapPin className="w-4 h-4" />
-                    <span>{recipient.hospital?.address || "Hospital Address"}</span>
+                    <span>Hospital Address: {recipient.donorHospital?.address || "N/A"}</span>
                 </div>
             </div>
         </div>

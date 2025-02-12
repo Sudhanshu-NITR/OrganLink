@@ -138,7 +138,12 @@ const acceptRequest = asyncHandler(async(req, res)=>{
         recipient_id,
         {
             $set: {
-                status: "matched"
+                status: "matched",
+                donorHospital:{
+                    name: donorHospital.name,
+                    phone: donorHospital.phone,
+                    address: donorHospital.address
+                }
             }
         },
         { new: true }

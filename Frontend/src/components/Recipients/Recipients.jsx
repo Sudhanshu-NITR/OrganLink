@@ -17,6 +17,8 @@ const Recipient = () => {
             try {
                 const response = await axios.get('/api/v1/hospitals/recipient/recipients');
                 if(response.data.success) setRecipientList(response.data.data);
+                console.log(recipientList);
+                
             } catch (error) {
                 console.log('Recipient data fetching failed, ERROR: ', error);
             }
