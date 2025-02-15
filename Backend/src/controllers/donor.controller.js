@@ -115,6 +115,18 @@ const acceptRequest = asyncHandler(async(req, res)=>{
         throw new ApiError(400, "Match already exists or organ already donated!!")
     }
     
+    const rejectedRecipientIds = donor.requests
+    .filter(request => request.recipient.toString() !== recipient_id.toString())
+    .map(request => request.recipient);
+    
+
+    if (rejectedRecipientIds.length > 0) {
+        await Recipient.updateMany(
+            { _id: { $in: rejectedRecipientIds } }, // $in selects documents where the value of a field equals any value in the specified array.
+            { $set: { status: "rejected" } }
+        );
+    }
+    
     const updatedRequests = await donor.requests.map((request) => ({
         ...request.toObject(),
         status: request.recipient.toString() === recipient_id.toString() 
