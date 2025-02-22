@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Building2, Users, HandshakeIcon } from 'lucide-react';
 import { NavLink } from 'react-router-dom'
+import { format } from "date-fns";
 import axios from 'axios';
 
 const StatCard = ({ icon: Icon, title, count, iconBackground }) => (
@@ -21,6 +22,7 @@ const Dashboard = () => {
     recipients: 0,
     matches: 0
   });
+  const [activity, setActivity] = useState([]);
 
   useEffect(()=>{
     (async()=>{
@@ -33,6 +35,16 @@ const Dashboard = () => {
               recipients: response.data.data.receiverCount,
               matches: response.data.data.matchCount,
             })
+          }
+        })
+        .catch((error)=>{
+          console.log("Error fetching Hospital Stats, ERROR: ", error);
+        })
+
+        await axios.get("/api/v1/hospitals/get-activity")
+        .then((response)=>{
+          if(response.data.success){
+            setActivity(response.data.data);
           }
         })
         .catch((error)=>{
@@ -91,32 +103,37 @@ const Dashboard = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              <tr>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  Jan 12, 2025
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  New donor registration
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                    Completed
-                  </span>
-                </td>
-              </tr>
-              <tr>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  Jan 11, 2025
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  Successful match found
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                    In Progress
-                  </span>
-                </td>
-              </tr>
+              {activity.length > 0 ? (
+                activity.map((item, index) => (
+                  <tr key={index}>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {new Date(item.date).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric"
+                    })}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {item.activity}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span
+                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                          ${item.status === "Completed" ? "bg-green-100 text-green-800" : "bg-blue-100 text-blue-800"}
+                        `}
+                      >
+                        {item.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="3" className="px-6 py-4 text-center text-gray-500">
+                    No Recent Activity
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

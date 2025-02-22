@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { loginHospital, logoutHospital, registerHospital, refreshAcessToken, getCurrentHospital, changeCurrentPassword, updateProfileDetails, updateHospitalAvatar, getStats} from "../controllers/hospital.controllers.js";
+import { loginHospital, logoutHospital, registerHospital, refreshAcessToken, getCurrentHospital, changeCurrentPassword, updateProfileDetails, updateHospitalAvatar, getStats, getRecentActivity} from "../controllers/hospital.controllers.js";
 import { getMatchesHistory } from "../controllers/match.controller.js";
 import { upload } from "../middlewares/multer.middleware.js"
 import { verifyJWT } from "../middlewares/auth.middleware.js"
@@ -26,6 +26,7 @@ router.route("/update-profile").patch(verifyJWT, updateProfileDetails);
 router.route("/change-avatar").patch(verifyJWT, upload.single("avatar"), updateHospitalAvatar);
 router.route("/match-history").get(verifyJWT, getMatchesHistory);
 router.route("/get-stats").get(verifyJWT, getStats);
+router.route("/get-activity").get(verifyJWT, getRecentActivity);
 
 import recipientRouter from "./recipient.routes.js";
 import donorRouter from "./donor.routes.js";

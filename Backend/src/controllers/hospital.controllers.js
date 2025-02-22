@@ -7,6 +7,7 @@ import jwt from "jsonwebtoken"
 import { Recipient } from '../models/recipient.models.js';
 import { Donor } from '../models/donor.models.js';
 import { Match } from '../models/match.models.js';
+import mongoose from 'mongoose';
 
 
 const generateRefreshAndAccessToken = async(hospitalId)=>{
@@ -318,6 +319,57 @@ const updateHospitalAvatar = asyncHandler(async(req, res)=>{
     ));
 });
 
+
+const getRecentActivity = asyncHandler(async (req, res) => {
+    const hospital_id = mongoose.isValidObjectId(req.hospital._id)
+    ? new mongoose.Types.ObjectId(req.hospital._id)
+    : req.hospital._id;
+
+    const [donors, recipients, matches] = await Promise.all([
+        Donor.aggregate([
+            { $match: { hospital: hospital_id } },
+            { $project: { date: '$updatedAt', activity: { $literal: 'New Donor registered' }, status: { $literal: "Completed" }, type: { $literal: 'donor' } } },
+            { $sort: { updatedAt: -1 } },
+            { $limit: 5 }
+        ]),
+        Recipient.aggregate([
+            { $match: { hospital: hospital_id } },
+            { $project: { date: '$updatedAt', activity: { $literal: 'New Request added' }, status: { $literal: "Successful" }, type: { $literal: 'recipient' } } },
+            { $sort: { updatedAt: -1 } },
+            { $limit: 5 }
+        ]),
+        Match.aggregate([
+            { 
+                $match: { 
+                    $or: [
+                        { donorHospital: hospital_id },
+                        { recipientHospital: hospital_id }
+                    ] 
+                } 
+            },
+            { $project: { date: '$updatedAt', activity: { $literal: 'Match found Successfully' }, status: { $literal: "Matched" }, type: { $literal: 'match' } } },
+            { $sort: { updatedAt: -1 } },
+            { $limit: 5 }
+        ])
+    ]);
+
+    const activity = [...donors, ...recipients, ...matches]
+    .sort((a, b) => new Date(b.date) - new Date(a.date))
+    .slice(0, 5);
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200, 
+            activity, 
+            "Recent Activity successfully fetched!!"
+        )
+    );
+});
+
+
+
 const getStats = asyncHandler(async(req, res)=>{
     const hospital = req.hospital;
     const donationCount =  await Donor.countDocuments({hospital: hospital._id});
@@ -357,5 +409,6 @@ export {
     getCurrentHospital,
     updateProfileDetails,
     updateHospitalAvatar,
-    getStats
+    getStats,
+    getRecentActivity
 };
